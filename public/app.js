@@ -30,12 +30,16 @@ function showDetail(index) {
     <div>
       <h2>${char.nom} ${char.prenom}</h2>
 
-      <input id="nom" value="${char.nom || ''}" placeholder="Nom">
-      <input id="prenom" value="${char.prenom || ''}" placeholder="Prénom">
+      <input id="prenom" value="${char.prenom || ''}" placeholder="Nom">
+      <input id="nom" value="${char.nom || ''}" placeholder="Prénom">
       <input id="race" value="${char.race || ''}" placeholder="Race">
       <input id="sexe" value="${char.sexe || ''}" placeholder="Sexe">
       <textarea id="description">${char.description || ''}</textarea>
-      <input id="image" value="${char.image || ''}" placeholder="Image URL">
+      
+      <label>Image locale</label>
+      <input type="file" id="imageFile">
+
+      ${char.image ? `<img src="${char.image}" style="max-width:200px;">` : ''}
 
       <button onclick="saveCharacter(${index})">Enregistrer</button>
       <button onclick="loadCharacters()">Retour</button>
@@ -51,7 +55,21 @@ async function saveCharacter(index) {
   char.race = document.getElementById('race').value;
   char.sexe = document.getElementById('sexe').value;
   char.description = document.getElementById('description').value;
-  char.image = document.getElementById('image').value;
+  
+  const fileInput = document.getElementById('imageFile');
+
+  if (fileInput.files.length > 0) {
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    char.image = data.path;
+  }
 
   await fetch('/api/personnages/update', {
     method: 'POST',
@@ -64,8 +82,8 @@ async function saveCharacter(index) {
 
 async function createCharacter() {
   const newChar = {
-    nom: 'Nouveau',
-    prenom: '',
+    prenom: 'Nouveau',
+    nom: '',
     race: '',
     sexe: '',
     description: '',

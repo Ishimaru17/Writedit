@@ -31,14 +31,20 @@ app.get('/api/personnages', (req, res) => {
 app.post('/api/personnages/update', (req, res) => {
   const char = req.body;
 
-  if (!char._filename) return res.status(400).send('Missing filename');
+  if (!char._filename) {
+    return res.status(400).send('Missing filename');
+  }
 
   const filePath = path.join(DATA_PATH, char._filename);
 
-  fs.writeFileSync(filePath, JSON.stringify(char, null, 2));
+  // on clone sans _filename
+  const { _filename, ...cleanChar } = char;
+
+  fs.writeFileSync(filePath, JSON.stringify(cleanChar, null, 2));
 
   res.sendStatus(200);
 });
+
 
 // CREATE
 app.post('/api/personnages/create', (req, res) => {
@@ -54,6 +60,31 @@ app.post('/api/personnages/create', (req, res) => {
   res.json(char);
 });
 
+
+//Upload image
+const multer = require('multer');
+
+// stockage des images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/images'); // dossier images
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
+
+// route pour upload image
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  console.log(req.file); // DEBUG : pour vérifier que le fichier est reçu
+  res.json({ path: '/images/' + req.file.filename });
+});
+
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });
+
+
