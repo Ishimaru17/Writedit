@@ -31,17 +31,31 @@ function showDetail(index) {
       <h2>${char.prenom} ${char.nom}</h2>
 
       <div class="category">
-       <h3 onclick="toggleCategory(this)">Civilité ▾</h3>
-      <div class="category-content">
-      <label>Nom</label>
-      <input id="nom" value="${char.nom || ''}">
-      <label>Prénom</label>
-      <input id="prenom" value="${char.prenom || ''}">
-      <label>Race</label>
-      <input id="race" value="${char.race || ''}">
-      <label>Sexe</label>
-      <input id="sexe" value="${char.sexe || ''}">
-      </div>
+        <h3 onclick="toggleCategory(this)">ETAT CIVIL ▾</h3>
+        <div class="category-content">
+          <label>Prénom</label>
+          <input id="prenom" value="${char.prenom || ''}">
+          <label>Nom</label>
+          <input id="nom" value="${char.nom || ''}">
+          <label>Race</label>
+          <input id="race" value="${char.race || ''}">
+          <label>Sexe</label>
+          <input id="sexe" value="${char.sexe || ''}">
+          <label>Orientation sexuelle</label>
+          <input id="orientation" value="${char.orientation || ''}">
+          <label>Surnoms</label>
+          <input id="surnoms" value="${char.surnoms || ''}">
+          <label>Age</label>
+          <input id="age" value="${char.age || ''}">
+          <label>Date naissance</label>
+          <input id="daten" value="${char.daten || ''}">
+          <label>Lieu naissance</label>
+          <input id="lieun" value="${char.lieun || ''}">
+          <label>Lieu résidence</label>
+          <input id="lieur" value="${char.lieur || ''}">
+          <label>Occupation</label>
+          <input id="occupation" value="${char.occupation || ''}">
+        </div>
       </div>
 
       <div class="category">
@@ -69,6 +83,13 @@ async function saveCharacter(index) {
   char.prenom = document.getElementById('prenom').value;
   char.race = document.getElementById('race').value;
   char.sexe = document.getElementById('sexe').value;
+  char.orientation = document.getElementById('orientation').value;
+  char.surnoms = document.getElementById('surnoms').value;
+  char.age = document.getElementById('age').value;
+  char.daten = document.getElementById('daten').value;
+  char.lieun = document.getElementById('lieun').value;
+  char.lieur = document.getElementById('lieur').value;
+  char.occupation = document.getElementById('occupation').value;
   char.description = document.getElementById('description').value;
   
   const fileInput = document.getElementById('imageFile');
@@ -101,6 +122,13 @@ async function createCharacter() {
     nom: '',
     race: '',
     sexe: '',
+    orientation: '',
+    surnoms: '',
+    age: '',
+    daten: '',
+    lieun: '',
+    lieur: '',
+    occupation: '',
     description: '',
     image: ''
   };
