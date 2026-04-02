@@ -52,3 +52,21 @@ h3 {
 .category-content { 
   margin-left: 10px; 
 }
+
+.inline-fields {
+  display: flex;
+  gap: 15px;       /* espace entre chaque champ */
+  margin-bottom: 10px;
+}
+
+.inline-fields > div {
+  flex: 1;         /* tous les champs prennent une largeur égale */
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-container {
+  width: 300px;     /* largeur du graphique */
+  height: 300px;    /* hauteur */
+  margin: 20px auto; /* centré */
+}

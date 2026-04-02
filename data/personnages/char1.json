@@ -3,7 +3,7 @@
   "nom": "So-Las",
   "race": "Fae",
   "sexe": "Homme",
-  "description": "Grand et brun",
+  "description": "L’autre en noir est grand et massif. Ses yeux et ses cheveux sont de la même couleur que sa tenue, il a une cicatrice sur l’arcade sourcilière et un rictus méprisant sur les lèvres. Honnêtement il est terrifiant.",
   "image": "/images/1775134405023-Capture d'Ã©cran 2026-03-13 171854.png",
   "orientation": "Homosexuel",
   "surnoms": "A",
@@ -11,5 +11,18 @@
   "daten": "1989-03-08",
   "lieun": "Palais Abria (Oshon)",
   "lieur": "Palais Abria (Oshon)",
-  "occupation": "Prince"
+  "occupation": "Prince",
+  "amesoeur": "Rose",
+  "sfamille": "Non eancré",
+  "taille": "1m96",
+  "corpulence": "Massif, musclé",
+  "couleurc": "Noirs",
+  "couleury": "Noirs",
+  "couleurp": "Bronzé",
+  "voix": "",
+  "tenue": "- Col roulé, pantalon souple, gants, rangers.\n- Tenue simple, prévue pour se battre. Noire (ou ton neutre).",
+  "accessoires": "- Epée.",
+  "eancrage": "N/A",
+  "tatouage": "Non",
+  "cicatrise": "arcade sourcilière"
 }
