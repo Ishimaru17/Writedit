@@ -132,16 +132,24 @@ function showDetail(index) {
           <label>Force</label>
           <input id="force" type="number" value="${char.stats?.force || 0}">
         </div>
+        <div>
+          <label>Robustesse</label>
+          <input id="robustesse" type="number" value="${char.stats?.robustesse || 0}">
+        </div>
       </div>
 
       <div class="inline-fields">
         <div>
-          <label>Charisme</label>
-          <input id="charisme" type="number" value="${char.stats?.charisme || 0}">
+          <label>Sociabilité</label>
+          <input id="sociabilite" type="number" value="${char.stats?.sociabilite || 0}">
         </div>
         <div>
-          <label>Endurance</label>
-          <input id="endurance" type="number" value="${char.stats?.endurance || 0}">
+          <label>Empathie</label>
+          <input id="empathie" type="number" value="${char.stats?.empathie || 0}">
+        </div>
+        <div>
+          <label>Perception</label>
+          <input id="perception" type="number" value="${char.stats?.perception || 0}">
         </div>
       </div>
 
@@ -167,15 +175,17 @@ function showDetail(index) {
     new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: ['Intelligence', 'Agilité', 'Force', 'Charisme', 'Endurance'],
+        labels: ['Intelligence', 'Agilité', 'Force', 'Robustesse', 'Sociabilité', 'Empathie', 'Perception'],
         datasets: [{
           label: 'Stats',
           data: [
             char.stats?.intelligence || 0,
             char.stats?.agilite || 0,
             char.stats?.force || 0,
-            char.stats?.charisme || 0,
-            char.stats?.endurance || 0
+            char.stats?.robustesse || 0,
+            char.stats?.sociabilite || 0,
+            char.stats?.empathie || 0,
+            char.stats?.perception || 0
           ]
         }]
       },
@@ -226,8 +236,10 @@ async function saveCharacter(index) {
     intelligence: Number(document.getElementById('intelligence').value),
     agilite: Number(document.getElementById('agilite').value),
     force: Number(document.getElementById('force').value),
-    charisme: Number(document.getElementById('charisme').value),
-    endurance: Number(document.getElementById('endurance').value)
+    robustesse: Number(document.getElementById('robustesse').value),
+    sociabilite: Number(document.getElementById('sociabilite').value),
+    empathie: Number(document.getElementById('empathie').value),
+    perception: Number(document.getElementById('perception').value)
   };
   
   const fileInput = document.getElementById('imageFile');
