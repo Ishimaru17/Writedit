@@ -11,13 +11,8 @@ async function loadCharacters() {
     const card = document.createElement('div');
     card.className = 'card';
 
-    let img = '';
-    if (char.image) {
-      img = `<img src="${char.image}">`;
-    }
-
     card.innerHTML = `
-      ${img}
+      ${char.image ? `<img src="${char.image}">` : ''}
       <h3>${char.nom} ${char.prenom}</h3>
     `;
 
@@ -31,26 +26,62 @@ function showDetail(index) {
   const char = characters[index];
   const content = document.getElementById('content');
 
-  let img = '';
-  if (char.image) {
-    img = `<img src="${char.image}" style="max-width:300px;">`;
-  }
-
   content.innerHTML = `
-    <div id="detail">
+    <div>
       <h2>${char.nom} ${char.prenom}</h2>
 
-      <p><strong>Race :</strong> ${char.race || ''}</p>
-      <p><strong>Sexe :</strong> ${char.sexe || ''}</p>
-      <p><strong>Description :</strong> ${char.description || ''}</p>
+      <input id="nom" value="${char.nom || ''}" placeholder="Nom">
+      <input id="prenom" value="${char.prenom || ''}" placeholder="Prénom">
+      <input id="race" value="${char.race || ''}" placeholder="Race">
+      <input id="sexe" value="${char.sexe || ''}" placeholder="Sexe">
+      <textarea id="description">${char.description || ''}</textarea>
+      <input id="image" value="${char.image || ''}" placeholder="Image URL">
 
-      ${img}
-
-      <br><br>
+      <button onclick="saveCharacter(${index})">Enregistrer</button>
       <button onclick="loadCharacters()">Retour</button>
     </div>
   `;
 }
 
-// lancer au chargement
+async function saveCharacter(index) {
+  const char = characters[index];
+
+  char.nom = document.getElementById('nom').value;
+  char.prenom = document.getElementById('prenom').value;
+  char.race = document.getElementById('race').value;
+  char.sexe = document.getElementById('sexe').value;
+  char.description = document.getElementById('description').value;
+  char.image = document.getElementById('image').value;
+
+  await fetch('/api/personnages/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(char)
+  });
+
+  loadCharacters();
+}
+
+async function createCharacter() {
+  const newChar = {
+    nom: 'Nouveau',
+    prenom: '',
+    race: '',
+    sexe: '',
+    description: '',
+    image: ''
+  };
+
+  const res = await fetch('/api/personnages/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newChar)
+  });
+
+  const created = await res.json();
+  characters.push(created);
+
+  loadCharacters();
+}
+
 loadCharacters();
