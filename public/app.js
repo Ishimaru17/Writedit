@@ -13,7 +13,7 @@ async function loadCharacters() {
 
     card.innerHTML = `
       ${char.image ? `<img src="${char.image}">` : ''}
-      <h3>${char.nom} ${char.prenom}</h3>
+      <h3>${char.prenom} ${char.nom}</h3>
     `;
 
     card.onclick = () => showDetail(index);
@@ -30,15 +30,22 @@ function showDetail(index) {
     <div>
       <h2>${char.nom} ${char.prenom}</h2>
 
-      <input id="prenom" value="${char.prenom || ''}" placeholder="Nom">
-      <input id="nom" value="${char.nom || ''}" placeholder="Prénom">
-      <input id="race" value="${char.race || ''}" placeholder="Race">
-      <input id="sexe" value="${char.sexe || ''}" placeholder="Sexe">
+      <h3>Civilité</h3>
+      <label>Nom</label>
+      <input id="nom" value="${char.nom || ''}">
+      <label>Prénom</label>
+      <input id="prenom" value="${char.prenom || ''}">
+      <label>Race</label>
+      <input id="race" value="${char.race || ''}">
+      <label>Sexe</label>
+      <input id="sexe" value="${char.sexe || ''}">
+
+      <h3>Apparence</h3>
+      <label>Description</label>
       <textarea id="description">${char.description || ''}</textarea>
-      
+
       <label>Image locale</label>
       <input type="file" id="imageFile">
-
       ${char.image ? `<img src="${char.image}" style="max-width:200px;">` : ''}
 
       <button onclick="saveCharacter(${index})">Enregistrer</button>
