@@ -31,46 +31,93 @@ function showDetail(index) {
       <h2>${char.prenom} ${char.nom}</h2>
 
       <div class="category">
-        <h3 onclick="toggleCategory(this)">ETAT CIVIL ▾</h3>
+        <h3 onclick="toggleCategory(this)">Etat civil ▾</h3>
         <div class="category-content">
-          <label>Prénom</label>
-          <input id="prenom" value="${char.prenom || ''}">
-          <label>Nom</label>
-          <input id="nom" value="${char.nom || ''}">
-          <label>Race</label>
-          <input id="race" value="${char.race || ''}">
-          <label>Sexe</label>
-          <input id="sexe" value="${char.sexe || ''}">
-          <label>Orientation sexuelle</label>
-          <input id="orientation" value="${char.orientation || ''}">
-          <label>Surnoms</label>
-          <input id="surnoms" value="${char.surnoms || ''}">
-          <label>Age</label>
-          <input id="age" value="${char.age || ''}">
-          <label>Date naissance</label>
-          <input id="daten" value="${char.daten || ''}">
-          <label>Lieu naissance</label>
-          <input id="lieun" value="${char.lieun || ''}">
-          <label>Lieu résidence</label>
-          <input id="lieur" value="${char.lieur || ''}">
-          <label>Occupation</label>
-          <input id="occupation" value="${char.occupation || ''}">
-          <label>Ame soeur</label>
-          <input id="amesoeur" value="${char.amesoeur || ''}">
-          <label>Situation de famille</label>
-          <input id="sfamille" value="${char.sfamille || ''}">
+          <div class="inline-fields">
+            <div>
+              <label>Prénom</label>
+              <input id="prenom" value="${char.prenom || ''}">
+            </div>
+            <div>
+              <label>Nom</label>
+              <input id="nom" value="${char.nom || ''}">
+            </div>
+            <div>
+              <label>Surnoms</label>
+              <input id="surnoms" value="${char.surnoms || ''}">
+            </div>
+          </div>
+
+          <div class="inline-fields">
+            <div>
+              <label>Race</label>
+              <input id="race" value="${char.race || ''}">
+            </div>
+            <div>
+              <label>Sexe</label>
+              <input id="sexe" value="${char.sexe || ''}">
+            </div>
+            <div>
+              <label>Orientation sexuelle</label>
+              <input id="orientation" value="${char.orientation || ''}">
+            </div>
+          </div>
+
+
+          <div class="inline-fields">
+            <div>
+              <label>Age</label>
+              <input id="age" value="${char.age || ''}">
+            </div>
+            <div>
+              <label>Date naissance</label>
+              <input id="daten" value="${char.daten || ''}">
+            </div>
+            <div>
+              <label>Lieu naissance</label>
+              <input id="lieun" value="${char.lieun || ''}">
+            </div>
+          </div>
+
+
+          <div class="inline-fields">
+            <div>
+              <label>Lieu résidence</label>
+              <input id="lieur" value="${char.lieur || ''}">
+            </div>
+            <div>
+              <label>Occupation</label>
+              <input id="occupation" value="${char.occupation || ''}">
+            </div>
+            <div>
+              <label>Ame soeur</label>
+              <input id="amesoeur" value="${char.amesoeur || ''}">
+            </div>
+            <div>
+              <label>Situation de famille</label>
+              <input id="sfamille" value="${char.sfamille || ''}">
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="category">
         <h3 onclick="toggleCategory(this)">Apparence ▾</h3>
         <div class="category-content">
-          <label>Taille</label>
-          <input id="taille" value="${char.taille || ''}">
-          <label>Corpulence</label>
-          <input id="corpulence" value="${char.corpulence || ''}">
-          <label>Voix</label>
-          <input id="voix" value="${char.voix || ''}">
+          <div class="inline-fields">
+            <div>
+              <label>Taille</label>
+              <input id="taille" value="${char.taille || ''}">
+            </div>
+            <div>
+              <label>Corpulence</label>
+              <input id="corpulence" value="${char.corpulence || ''}">
+            </div>
+            <div>
+              <label>Voix</label>
+              <input id="voix" value="${char.voix || ''}">
+            </div>
+          </div>
 
           <div class="inline-fields">
             <div>
@@ -118,44 +165,133 @@ function showDetail(index) {
         </div>
       </div>
 
-      <h3>Stats</h3>
-      <div class="inline-fields">
-        <div>
-          <label>Intelligence</label>
-          <input id="intelligence" type="number" value="${char.stats?.intelligence || 0}">
-        </div>
-        <div>
-          <label>Agilité</label>
-          <input id="agilite" type="number" value="${char.stats?.agilite || 0}">
-        </div>
-        <div>
-          <label>Force</label>
-          <input id="force" type="number" value="${char.stats?.force || 0}">
-        </div>
-        <div>
-          <label>Robustesse</label>
-          <input id="robustesse" type="number" value="${char.stats?.robustesse || 0}">
+      <div class="category">
+        <h3 onclick="toggleCategory(this)">Caractère ▾</h3>
+        <div class="category-content">
+          <div class="inline-fields">
+            <div>
+              <label>Qualités</label>
+              <textarea id="qualites">${char.qualites || ''}</textarea>
+            </div>
+            <div>
+              <label>Défauts</label>
+              <textarea id="defauts">${char.defauts || ''}</textarea>
+            </div>
+          </div>
+
+          <div class="inline-fields">
+            <div>
+              <label>Goûts</label>
+              <textarea id="gouts">${char.gouts || ''}</textarea>
+            </div>
+            <div>
+              <label>Tics</label>
+              <textarea id="tics">${char.tics || ''}</textarea>
+            </div>
+            <div>
+              <label>Peurs</label>
+              <textarea id="peurs">${char.peurs || ''}</textarea>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="inline-fields">
-        <div>
-          <label>Sociabilité</label>
-          <input id="sociabilite" type="number" value="${char.stats?.sociabilite || 0}">
-        </div>
-        <div>
-          <label>Empathie</label>
-          <input id="empathie" type="number" value="${char.stats?.empathie || 0}">
-        </div>
-        <div>
-          <label>Perception</label>
-          <input id="perception" type="number" value="${char.stats?.perception || 0}">
+      <div class="category">
+        <h3 onclick="toggleCategory(this)">Profil ▾</h3>
+        <div class="category-content">
+          <div class="inline-fields">
+            <div>
+              <label>Expressions</label>
+              <textarea id="expressions">${char.expressions || ''}</textarea>
+            </div>
+            <div>
+              <label>Pouvoirs</label>
+              <textarea id="pouvoirs">${char.pouvoirs || ''}</textarea>
+            </div>
+          </div>
+
+          <div class="inline-fields">
+            <div>
+              <label>Secrets</label>
+              <textarea id="secrets">${char.secrets || ''}</textarea>
+            </div>
+            <div>
+              <label>Lieux marquants</label>
+              <textarea id="lieuxm">${char.lieuxm || ''}</textarea>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="chart-container">
-        <canvas id="statsChart"></canvas>
+      <div class="category">
+        <h3 onclick="toggleCategory(this)">Evolution ▾</h3>
+        <div class="category-content">
+          <div class="inline-fields">
+            <div>
+              <label>Buts, Objectifs</label>
+              <textarea id="buts">${char.buts || ''}</textarea>
+            </div>
+          </div>
+
+          <div class="inline-fields">
+            <div>
+              <label>Passé</label>
+              <textarea id="passe">${char.passe || ''}</textarea>
+            </div>
+            <div>
+              <label>Présent</label>
+              <textarea id="present">${char.present || ''}</textarea>
+            </div>
+            <div>
+              <label>Futur</label>
+              <textarea id="futur">${char.futur || ''}</textarea>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <div class="category">
+        <h3 onclick="toggleCategory(this)">Stats ▾</h3>
+        <div class="category-content">
+          <div class="inline-fields">
+            <div>
+              <label>Intelligence</label>
+              <input id="intelligence" type="number" value="${char.stats?.intelligence || 0}">
+            </div>
+            <div>
+              <label>Agilité</label>
+              <input id="agilite" type="number" value="${char.stats?.agilite || 0}">
+            </div>
+            <div>
+              <label>Force</label>
+              <input id="force" type="number" value="${char.stats?.force || 0}">
+            </div>
+            <div>
+              <label>Robustesse</label>
+              <input id="robustesse" type="number" value="${char.stats?.robustesse || 0}">
+            </div>
+          </div>
+
+          <div class="inline-fields">
+            <div>
+              <label>Sociabilité</label>
+              <input id="sociabilite" type="number" value="${char.stats?.sociabilite || 0}">
+            </div>
+            <div>
+              <label>Empathie</label>
+              <input id="empathie" type="number" value="${char.stats?.empathie || 0}">
+            </div>
+            <div>
+              <label>Perception</label>
+              <input id="perception" type="number" value="${char.stats?.perception || 0}">
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="statsChart"></canvas>
+          </div>
+      </div>
+    </div
 
 
       <label>Image locale</label>
@@ -232,6 +368,19 @@ async function saveCharacter(index) {
   char.tatouage = document.getElementById('tatouage').value;
   char.cicatrise = document.getElementById('cicatrise').value;
   char.description = document.getElementById('description').value;
+  char.qualites = document.getElementById('qualites').value;
+  char.defauts = document.getElementById('defauts').value;
+  char.gouts = document.getElementById('gouts').value;
+  char.tics = document.getElementById('tics').value;
+  char.peurs = document.getElementById('peurs').value;
+  char.expressions = document.getElementById('expressions').value;
+  char.pouvoirs = document.getElementById('pouvoirs').value;
+  char.secrets = document.getElementById('secrets').value;
+  char.lieuxm = document.getElementById('lieuxm').value;
+  char.buts = document.getElementById('buts').value;
+  char.passe = document.getElementById('passe').value;
+  char.present = document.getElementById('present').value;
+  char.futur = document.getElementById('futur').value;
   char.stats = {
     intelligence: Number(document.getElementById('intelligence').value),
     agilite: Number(document.getElementById('agilite').value),
@@ -293,6 +442,19 @@ async function createCharacter() {
     tatouage: '',
     cicatrise: '',
     description: '',
+    qualites: '',
+    defauts: '',
+    gouts: '',
+    tics: '',
+    peurs: '',
+    expressions: '',
+    pouvoirs: '',
+    secrets: '',
+    lieuxm: '',
+    buts: '',
+    passe: '',
+    present: '',
+    futur: '',
     stats: {
       intelligence: 5,
       agilite: 5,
