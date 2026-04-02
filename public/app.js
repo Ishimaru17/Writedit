@@ -28,9 +28,11 @@ function showDetail(index) {
 
   content.innerHTML = `
     <div>
-      <h2>${char.nom} ${char.prenom}</h2>
+      <h2>${char.prenom} ${char.nom}</h2>
 
-      <h3>Civilité</h3>
+      <div class="category">
+       <h3 onclick="toggleCategory(this)">Civilité ▾</h3>
+      <div class="category-content">
       <label>Nom</label>
       <input id="nom" value="${char.nom || ''}">
       <label>Prénom</label>
@@ -39,10 +41,16 @@ function showDetail(index) {
       <input id="race" value="${char.race || ''}">
       <label>Sexe</label>
       <input id="sexe" value="${char.sexe || ''}">
+      </div>
+      </div>
 
-      <h3>Apparence</h3>
+      <div class="category">
+        <h3 onclick="toggleCategory(this)">Apparence ▾</h3>
+      <div class="category-content">
       <label>Description</label>
       <textarea id="description">${char.description || ''}</textarea>
+      </div>
+      </div>
 
       <label>Image locale</label>
       <input type="file" id="imageFile">
@@ -107,6 +115,17 @@ async function createCharacter() {
   characters.push(created);
 
   loadCharacters();
+}
+
+function toggleCategory(header) {
+  const content = header.nextElementSibling;
+  if(content.style.display === 'none') {
+    content.style.display = 'block';
+    header.textContent = header.textContent.replace('▸','▾');
+  } else {
+    content.style.display = 'none';
+    header.textContent = header.textContent.replace('▾','▸');
+  }
 }
 
 loadCharacters();
