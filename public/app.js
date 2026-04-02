@@ -331,7 +331,7 @@ function showDetail(index) {
         scales: {
           r: {
             min: 0,
-            max: 10
+            max: 20
           }
         }
       }

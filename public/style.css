@@ -1,9 +1,3 @@
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f4f4f4;
-}
-
 header {
   background: #222;
   color: white;
@@ -17,11 +11,12 @@ header {
 }
 
 .card {
-  background: white;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(5px); /* effet moderne */
   padding: 10px;
   margin: 10px;
   border-radius: 10px;
-  width: 200px;
+  width: 196px;
   display: inline-block;
   cursor: pointer;
 }
@@ -36,6 +31,7 @@ header {
 input, textarea { 
   width: 100%; 
   margin-bottom: 10px; 
+  font-family: Bookman Old Style;
 }
 
 label { 
@@ -69,4 +65,32 @@ h3 {
   width: 300px;     /* largeur du graphique */
   height: 300px;    /* hauteur */
   margin: 20px auto; /* centré */
+}
+
+
+
+body {
+  font-family: Bookman Old Style;
+  margin: 0;
+
+  background : rgba(0, 0, 0, 1);
+}
+
+#content {
+  background: rgba(255, 255, 255, 0.5); /* blanc transparent */
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+
+
+.chart-container {
+  width: 300px;
+  height: 300px;
+  margin: 20px auto;
+
+  background: rgba(255,255,255,0.9);
+  border-radius: 10px;
+  padding: 10px;
 }
