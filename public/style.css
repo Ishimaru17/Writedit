@@ -1,3 +1,70 @@
+/* ======================
+   Body & global
+   ====================== */
+body {
+  font-family: Bookman Old Style;
+  margin: 0;
+  background: rgba(0, 0, 0, 1);
+}
+
+/* ======================
+   App layout
+   ====================== */
+#app {
+  display: flex;
+  min-height: 100vh;
+}
+
+#sidebar {
+  width: 200px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px;
+  min-height: 100vh;
+}
+
+#sidebar.hidden {
+  display: none;
+}
+
+/* ======================
+   Sidebar buttons
+   ====================== */
+#sidebar button {
+  display: block;           /* empile verticalement */
+  width: 100%;              /* remplissage complet de la sidebar */
+  margin: 10px 0;           /* espace entre les boutons */
+  padding: 10px 12px;       /* padding confortable */
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: rgba(50, 50, 50, 0.8); /* gris foncé */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;          /* texte à gauche */
+}
+
+#sidebar button:hover {
+  background: rgba(80, 80, 80, 0.9); /* un peu plus clair au hover */
+  transform: scale(1.02);            /* léger effet zoom */
+}
+
+#sidebar button:active {
+  transform: scale(0.98);            /* effet click */
+  background: rgba(120, 120, 120, 0.9);
+}
+
+#main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ======================
+   Header
+   ====================== */
 header {
   background: #222;
   color: white;
@@ -5,11 +72,21 @@ header {
   text-align: center;
 }
 
-#menu {
-  padding: 10px;
-  background: #ddd;
+/* ======================
+   Content area
+   ====================== */
+#content {
+  background: rgba(255, 255, 255, 0.5); /* blanc transparent */
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 1;
+  overflow-y: auto; /* scroll si long contenu */
 }
 
+/* ======================
+   Cards (Personnages / Wiki)
+   ====================== */
 .card {
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(5px); /* effet moderne */
@@ -19,6 +96,8 @@ header {
   width: 196px;
   display: inline-block;
   cursor: pointer;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .card img {
@@ -27,7 +106,38 @@ header {
   object-fit: cover;
 }
 
+.text-card {
+  font-size: 40px;
+}
 
+.card:hover {
+  transform: translateY(-5px);
+  transition: 0.2s;
+}
+
+.card p {
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* ======================
+   Wiki Grid
+   ====================== */
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+pre {
+  white-space: pre-wrap;   /* garde les retours à la ligne + wrap */
+  word-wrap: break-word;   /* coupe les mots trop longs */
+  overflow-wrap: break-word;
+}
+
+/* ======================
+   Inputs / Labels
+   ====================== */
 input, textarea { 
   width: 100%; 
   margin-bottom: 10px; 
@@ -42,7 +152,8 @@ label {
 }
 
 h3 { 
-  margin-top: 20px; color: #555;
+  margin-top: 20px; 
+  color: #555;
 }
 
 .category-content { 
@@ -61,36 +172,18 @@ h3 {
   flex-direction: column;
 }
 
-.chart-container {
-  width: 300px;     /* largeur du graphique */
-  height: 300px;    /* hauteur */
-  margin: 20px auto; /* centré */
-}
-
-
-
-body {
-  font-family: Bookman Old Style;
-  margin: 0;
-
-  background : rgba(0, 0, 0, 1);
-}
-
-#content {
-  background: rgba(255, 255, 255, 0.5); /* blanc transparent */
-  margin: 20px;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-
-
+/* ======================
+   Chart / Stats
+   ====================== */
 .chart-container {
   width: 300px;
   height: 300px;
   margin: 20px auto;
-
   background: rgba(255,255,255,0.9);
   border-radius: 10px;
   padding: 10px;
 }
+
+
+
+

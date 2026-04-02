@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const DATA_PATH = path.join(__dirname, 'data/personnages');
+const WIKI_PATH = path.join(__dirname, 'data/wiki');
 
 // GET ALL
 app.get('/api/personnages', (req, res) => {
@@ -82,6 +83,27 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
   console.log(req.file); // DEBUG : pour vérifier que le fichier est reçu
   res.json({ path: '/images/' + req.file.filename });
 });
+
+//Wiki
+app.get('/api/wiki', (req, res) => {
+  const files = fs.readdirSync(WIKI_PATH);
+
+  const data = files.map(file => {
+    const ext = path.extname(file);
+
+    return {
+      name: file,
+      type: ext === '.png' ? 'image' : 'text',
+      path: '/wiki/' + file
+    };
+  });
+
+  res.json(data);
+});
+
+// servir les images wiki
+app.use('/wiki', express.static(WIKI_PATH));
+
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);

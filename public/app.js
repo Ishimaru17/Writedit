@@ -22,6 +22,21 @@ async function loadCharacters() {
   });
 }
 
+function goHome() {
+  document.getElementById('sidebar').classList.add('hidden');
+
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <h1>Serment maudit</h1>
+    <button onclick="enterApp()">Entrer</button>
+  `;
+}
+
+function enterApp() {
+  document.getElementById('sidebar').classList.remove('hidden');
+  loadCharacters(); // page par défaut
+}
+
 function showDetail(index) {
   const char = characters[index];
   const content = document.getElementById('content');
@@ -488,4 +503,57 @@ function toggleCategory(header) {
   }
 }
 
-loadCharacters();
+async function loadWiki() {
+  const res = await fetch('/api/wiki');
+  const files = await res.json();
+
+  const content = document.getElementById('content');
+  content.innerHTML = '<h2>Wiki</h2><div class="grid"></div>';
+
+  const grid = content.querySelector('.grid');
+
+  files.forEach(file => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    if (file.type === 'image') {
+      card.innerHTML = `
+        <img src="${file.path}">
+        <p>${file.name}</p>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="text-card">📄</div>
+        <p>${file.name}</p>
+      `;
+    }
+
+    card.onclick = () => openWiki(file);
+
+    grid.appendChild(card);
+  });
+}
+
+async function openWiki(file) {
+  const content = document.getElementById('content');
+
+  if (file.type === 'image') {
+    content.innerHTML = `
+      <h2>${file.name}</h2>
+      <img src="${file.path}" style="max-width:100%">
+      <button onclick="loadWiki()">Retour</button>
+    `;
+  } else {
+    const res = await fetch(file.path);
+    const text = await res.text();
+
+    content.innerHTML = `
+      <h2>${file.name}</h2>
+      <pre>${text}</pre>
+      <button onclick="loadWiki()">Retour</button>
+    `;
+  }
+}
+
+
+goHome();
