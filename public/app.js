@@ -1,35 +1,43 @@
 let characters = [];
-
-async function loadCharacters() {
-  const res = await fetch('/api/personnages');
-  characters = await res.json();
-
-  const content = document.getElementById('content');
-  content.innerHTML = '';
-
-  characters.forEach((char, index) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    card.innerHTML = `
-      ${char.image ? `<img src="${char.image}">` : ''}
-      <h3>${char.prenom} ${char.nom}</h3>
-    `;
-
-    card.onclick = () => showDetail(index);
-
-    content.appendChild(card);
-  });
-}
+let currentBook = null;
 
 function goHome() {
   document.getElementById('sidebar').classList.add('hidden');
 
   const content = document.getElementById('content');
+
   content.innerHTML = `
-    <h1>Serment maudit</h1>
-    <button onclick="enterApp()">Entrer</button>
+    <h1>Choisir un livre</h1>
+
+    <div class="grid">
+      <div class="card" onclick="selectBook('serment-maudit')">
+        <h3>Serment maudit</h3>
+      </div>
+
+      <div class="card" onclick="selectBook('egisse-jed')">
+        <h3>Egisse-Jed</h3>
+      </div>
+    </div>
   `;
+}
+
+function selectBook(book) {
+  currentBook = book;
+
+  document.getElementById('sidebar').classList.remove('hidden');
+
+  updateTitle();
+  loadCharacters();
+}
+
+function updateTitle() {
+  const title = document.querySelector('header h1');
+
+  if (currentBook === 'serment-maudit') {
+    title.textContent = 'Serment maudit';
+  } else if (currentBook === 'egisse-jed') {
+    title.textContent = 'Egisse-Jed';
+  }
 }
 
 function enterApp() {
@@ -352,7 +360,37 @@ function showDetail(index) {
       }
     });
   }, 0);
+}
 
+async function loadCharacters() {
+  const res = await fetch(`/api/personnages/${currentBook}`);
+  characters = await res.json();
+  characters.sort((a, b) => {
+    return Number(a.filename) - Number(b.filename);
+  });
+
+  
+  const content = document.getElementById('content');
+  content.innerHTML = `
+      <h2>Personnages</h2>
+      <button onclick="createCharacter()">➕ Nouveau personnage</button>
+      <div class="grid"></div>
+    `;
+
+  characters.forEach((char, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    card.innerHTML = `
+      ${char.image ? `<img src="${char.image}">` : ''}
+      <h3>${char.prenom} ${char.nom}</h3>
+    `;
+
+
+    card.onclick = () => showDetail(index);
+
+    content.appendChild(card);
+  });
 }
 
 async function saveCharacter(index) {
@@ -421,7 +459,7 @@ async function saveCharacter(index) {
     char.image = data.path;
   }
 
-  await fetch('/api/personnages/update', {
+  await fetch(`/api/personnages/update/${currentBook}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(char)
@@ -480,7 +518,7 @@ async function createCharacter() {
     image: ''
   };
 
-  const res = await fetch('/api/personnages/create', {
+  const res = await fetch(`/api/personnages/create/${currentBook}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newChar)
@@ -504,7 +542,7 @@ function toggleCategory(header) {
 }
 
 async function loadWiki() {
-  const res = await fetch('/api/wiki');
+  const res = await fetch(`/api/wiki/${currentBook}`);
   const files = await res.json();
 
   const content = document.getElementById('content');
@@ -523,7 +561,7 @@ async function loadWiki() {
       `;
     } else {
       card.innerHTML = `
-        <div class="text-card">📄</div>
+        ${file.name.endsWith('.png') ? `<img src="${file.path}">` : '<div class="text-card">📄</div>'}
         <p>${file.name}</p>
       `;
     }
@@ -534,26 +572,105 @@ async function loadWiki() {
   });
 }
 
-async function openWiki(file) {
+function openWiki(file) {
   const content = document.getElementById('content');
 
-  if (file.type === 'image') {
+  if (file.name.endsWith('.png') || file.name.endsWith('.jpg')) {
     content.innerHTML = `
       <h2>${file.name}</h2>
       <img src="${file.path}" style="max-width:100%">
       <button onclick="loadWiki()">Retour</button>
     `;
   } else {
-    const res = await fetch(file.path);
-    const text = await res.text();
-
-    content.innerHTML = `
-      <h2>${file.name}</h2>
-      <pre>${text}</pre>
-      <button onclick="loadWiki()">Retour</button>
-    `;
+    fetch(file.path)
+      .then(res => res.text())
+      .then(text => {
+        content.innerHTML = `
+          <h2>${file.name}</h2>
+          <pre>${text}</pre>
+          <button onclick="loadWiki()">Retour</button>
+        `;
+      });
   }
 }
+
+function loadTranslator() {
+  const content = document.getElementById('content');
+
+  content.innerHTML = `
+    <h2>🌍 Traducteur</h2>
+
+    <label>Texte</label>
+    <textarea id="translateInput"></textarea>
+
+    <label>De</label>
+    <select id="sourceLang">
+      <option value="fr">Français</option>
+      <option value="en">Anglais</option>
+    </select>
+
+    <label>Vers</label>
+    <select id="targetLang">
+      <option value="en">Anglais</option>
+      <option value="fr">Français</option>
+    </select>
+
+    <button onclick="translateText()">Traduire</button>
+
+    <h3>Résultat</h3>
+    <textarea id="translateOutput" readonly></textarea>
+  `;
+}
+
+function translateText() {
+  const text = document.getElementById('translateInput').value;
+  const source = document.getElementById('sourceLang').value;
+  const target = document.getElementById('targetLang').value;
+
+  const url = `https://translate.google.com/?sl=${source}&tl=${target}&text=${encodeURIComponent(text)}&op=translate`;
+
+  window.open(url, '_blank');
+}
+
+function loadSynonyms() {
+  const content = document.getElementById('content');
+
+  content.innerHTML = `
+    <h2>💡 Synonymes</h2>
+
+    <label>Mot</label>
+    <input id="synonymInput" placeholder="ex: sombre">
+
+    <button onclick="getSynonyms()">Chercher</button>
+
+    <h3>Résultats</h3>
+    <div id="synonymResults"></div>
+  `;
+}
+
+async function getSynonyms() {
+  const word = document.getElementById('synonymInput').value;
+
+  const res = await fetch(`https://api.datamuse.com/words?ml=${word}`);
+  const data = await res.json();
+
+  const resultsDiv = document.getElementById('synonymResults');
+  resultsDiv.innerHTML = '';
+
+  data.slice(0, 20).forEach(item => {
+    const span = document.createElement('span');
+    span.textContent = item.word;
+    span.className = 'synonym';
+
+    span.onclick = () => {
+      document.getElementById('synonymInput').value = item.word;
+    };
+
+    resultsDiv.appendChild(span);
+  });
+}
+
+
 
 
 goHome();

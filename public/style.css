@@ -184,6 +184,19 @@ h3 {
   padding: 10px;
 }
 
+.synonym {
+  display: inline-block;
+  margin: 5px;
+  padding: 5px 10px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.synonym:hover {
+  background: #ddd;
+}
 
 
 

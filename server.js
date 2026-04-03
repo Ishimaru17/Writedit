@@ -11,55 +11,68 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const DATA_PATH = path.join(__dirname, 'data/personnages');
-const WIKI_PATH = path.join(__dirname, 'data/wiki');
-
 // GET ALL
-app.get('/api/personnages', (req, res) => {
-  const files = fs.readdirSync(DATA_PATH);
+app.get('/api/personnages/:livre', (req, res) => {
+  const livre = req.params.livre;
 
-  const characters = files.map(file => {
-    const data = fs.readFileSync(path.join(DATA_PATH, file));
-    const json = JSON.parse(data);
-    json._filename = file;
-    return json;
-  });
+  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'personnages');
 
-  res.json(characters);
-});
-
-// UPDATE
-app.post('/api/personnages/update', (req, res) => {
-  const char = req.body;
-
-  if (!char._filename) {
-    return res.status(400).send('Missing filename');
+   if (!fs.existsSync(dirPath)) {
+    return res.json([]);
   }
 
-  const filePath = path.join(DATA_PATH, char._filename);
+  const files = fs.readdirSync(dirPath);
 
-  // on clone sans _filename
-  const { _filename, ...cleanChar } = char;
+  const data = files.map(file => {
+    const content = JSON.parse(fs.readFileSync(path.join(dirPath, file)));
+    return {
+      ...content,
+      filename: file
+    };
+  });
 
-  fs.writeFileSync(filePath, JSON.stringify(cleanChar, null, 2));
-
-  res.sendStatus(200);
+  res.json(data);
 });
+
+
+// UPDATE
+app.post('/api/personnages/update/:livre', (req, res) => {
+  const livre = req.params.livre;
+
+  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'personnages');
+
+  const updatedChar = req.body;
+
+  const filePath = path.join(dirPath, updatedChar.filename);
+
+  fs.writeFileSync(filePath, JSON.stringify(updatedChar, null, 2));
+
+  res.json(updatedChar);
+});
+
 
 
 // CREATE
-app.post('/api/personnages/create', (req, res) => {
-  const char = req.body;
+app.post('/api/personnages/create/:livre', (req, res) => {
+  const livre = req.params.livre;
 
-  const filename = `char_${Date.now()}.json`;
-  const filePath = path.join(DATA_PATH, filename);
+  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'personnages');
 
-  char._filename = filename;
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
 
-  fs.writeFileSync(filePath, JSON.stringify(char, null, 2));
+  const newChar = req.body;
 
-  res.json(char);
+  const filename = 'char_' + Date.now() + '.json';
+
+  const filePath = path.join(dirPath, filename);
+
+  fs.writeFileSync(filePath, JSON.stringify(newChar, null, 2));
+
+  res.json(newChar);
 });
+
 
 
 //Upload image
@@ -85,24 +98,25 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 });
 
 //Wiki
-app.get('/api/wiki', (req, res) => {
-  const files = fs.readdirSync(WIKI_PATH);
+app.get('/api/wiki/:livre', (req, res) => {
+  const livre = req.params.livre;
 
-  const data = files.map(file => {
-    const ext = path.extname(file);
+  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'wiki');
 
-    return {
-      name: file,
-      type: ext === '.png' ? 'image' : 'text',
-      path: '/wiki/' + file
-    };
-  });
+  const files = fs.readdirSync(dirPath);
+
+  const data = files.map(file => ({
+    name: file,
+    path: `/wiki/${livre}/wiki/${file}`
+  }));
 
   res.json(data);
 });
 
+
 // servir les images wiki
-app.use('/wiki', express.static(WIKI_PATH));
+app.use('/wiki', express.static(path.join(__dirname, 'data', 'livres')));
+
 
 
 app.listen(PORT, () => {
