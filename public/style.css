@@ -227,6 +227,8 @@ h3 {
   background: white;
   padding: 15px;
   border-radius: 10px;
+  text-align : justify;
+  font-family: Bookman Old Style;
 }
 
 .editor-toolbar button {

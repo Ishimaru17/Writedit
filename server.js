@@ -183,6 +183,62 @@ app.get('/api/texte/:livre', (req, res) => {
   res.json(files);
 });
 
+app.post('/api/stats', (req, res) => {
+  const { written, net } = req.body;
+
+  const filePath = path.join(__dirname, 'data', 'stats.json');
+
+  let stats = {};
+
+  try {
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      stats = raw ? JSON.parse(raw) : {};
+    }
+  } catch {
+    stats = {};
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+
+  if (!stats[today]) {
+    stats[today] = { written: 0, net: 0 };
+  }
+
+  stats[today].written += written;
+  stats[today].net += net;
+
+  fs.writeFileSync(filePath, JSON.stringify(stats, null, 2));
+
+  res.json(stats);
+});
+
+
+
+app.get('/api/stats', (req, res) => {
+  const filePath = path.join(__dirname, 'data', 'stats.json');
+
+  try {
+    if (!fs.existsSync(filePath)) {
+      return res.json({});
+    }
+
+    const raw = fs.readFileSync(filePath, 'utf-8');
+
+    if (!raw) {
+      return res.json({});
+    }
+
+    const stats = JSON.parse(raw);
+
+    res.json(stats);
+
+  } catch (err) {
+    console.error("Erreur lecture stats :", err);
+    res.json({}); // évite crash front
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);

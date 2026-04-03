@@ -1,5 +1,8 @@
 let characters = [];
 let currentBook = null;
+let lastWordCount = 0;
+let isLoading = false;
+
 
 function goHome() {
   document.getElementById('sidebar').classList.add('hidden');
@@ -7,6 +10,7 @@ function goHome() {
   const content = document.getElementById('content');
 
   content.innerHTML = `
+
     <h1>Choisir un livre</h1>
 
     <div class="grid">
@@ -19,6 +23,8 @@ function goHome() {
       </div>
     </div>
   `;
+
+  document.querySelector('header h1').textContent = "Writedit";
 
   hideChaptersSidebar();
 }
@@ -39,6 +45,8 @@ function updateTitle() {
     title.textContent = 'Serment maudit';
   } else if (currentBook === 'egisse-jed') {
     title.textContent = 'Egisse-Jed';
+  } else {
+    tile.textContent = 'Writedit'
   }
 }
 
@@ -702,10 +710,18 @@ function loadTextEditor(file = "chapitre1.txt") {
     <button onclick="exportDocx('${file}')">📄 Export Word</button>
   `;
 
+  isLoading = true;
+
   fetch(`/api/texte/${currentBook}/${file}`)
     .then(res => res.text())
     .then(text => {
       document.getElementById('editor').innerHTML = text;
+
+      const initialCount = countWords(editor.innerText);
+      lastWordCount = initialCount;
+      updateWordCount(); // 👈 affiche direct le bon nombre
+      
+      isLoading = false;
     });
 
   loadChapters();
@@ -721,11 +737,37 @@ function loadTextEditor(file = "chapitre1.txt") {
     }, 2000); // 2 secondes après arrêt frappe
   });
 
-  document.getElementById('editor').addEventListener('input', () => {
-  updateWordCount();
-});
+  document.getElementById('editor').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.execCommand('insertLineBreak');
+    }
+  });
 
-}
+  document.getElementById('editor').addEventListener('input', () => {
+    if (isLoading) return;
+
+    const current = countWords(editor.innerText);
+    const diff = current - lastWordCount;
+
+    let written = 0;
+    let net = diff;
+
+    if (diff > 0 && diff < 20) {
+      written = diff;
+    }
+
+    if (Math.abs(diff) < 20) {
+      sendStats(written, net);
+    }
+
+    lastWordCount = current;
+
+    updateWordCount();
+    });
+
+    lastWordCount = countWords(editor.innerText);
+  }
 
 async function saveText(file) {
   const text = document.getElementById('editor').innerHTML;
@@ -735,6 +777,16 @@ async function saveText(file) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content: text })
   });
+}
+
+function countWords(text) {
+  if (!text) return 0;
+
+  return text
+    .replace(/\n/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(w => w.length > 0).length;
 }
 
 
@@ -795,5 +847,42 @@ function updateWordCount() {
   document.getElementById('wordCount').textContent = words.length + " mots";
 }
 
+async function sendStats(written, net) {
+  await fetch('/api/stats', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ written, net })
+  });
+}
+
+async function loadStats() {
+  hideChaptersSidebar();
+
+  const res = await fetch('/api/stats');
+  const stats = await res.json();
+
+  const today = new Date().toISOString().split('T')[0];
+  const dayStats = stats[today] || { written: 0, net: 0 };
+
+  const goal = 300;
+  const percent = Math.min((dayStats.net / goal) * 100, 100);
+
+  content.innerHTML = `
+    <h2>📊 Stats du jour</h2>
+
+    <p>✍️ Écrits : ${dayStats.written} mots</p>
+    <p>🧹 Net : ${dayStats.net} mots</p>
+
+    <p>🎯 Objectif : ${goal} mots</p>
+
+    <div style="background:#ddd; border-radius:10px;">
+      <div style="width:${percent}%; background:green; color:white; padding:5px;">
+        ${Math.floor(percent)}%
+      </div>
+    </div>
+  `;
+}
 
 goHome();
