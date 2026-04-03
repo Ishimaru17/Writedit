@@ -194,9 +194,43 @@ h3 {
   transition: 0.2s;
 }
 
+/*Synonym*/
 .synonym:hover {
   background: #ddd;
 }
 
+/*chaptersidebar*/
+#chaptersSidebar {
+  width: 200px;
+  background: rgba(20,20,20,0.9);
+  color: white;
+  padding: 10px;
+  min-height: 100vh;
+}
+
+#chaptersSidebar.hidden {
+  display: none;
+}
+
+#chaptersList div {
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#chaptersList div:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+#editor {
+  min-height: 400px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.editor-toolbar button {
+  margin-right: 5px;
+}
 
 

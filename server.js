@@ -168,9 +168,20 @@ app.get('/api/export/:livre/:file', async (req, res) => {
   res.send(buffer);
 });
 
-function exportDocx(file = "chapitre1.txt") {
-  window.open(`/api/export/${currentBook}/${file}`);
-}
+
+app.get('/api/texte/:livre', (req, res) => {
+  const { livre } = req.params;
+
+  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'texte');
+
+  if (!fs.existsSync(dirPath)) {
+    return res.json([]);
+  }
+
+  const files = fs.readdirSync(dirPath);
+
+  res.json(files);
+});
 
 
 app.listen(PORT, () => {

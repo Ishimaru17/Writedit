@@ -671,25 +671,36 @@ async function getSynonyms() {
 }
 
 function loadTextEditor(file = "chapitre1.txt") {
+  document.getElementById('chaptersSidebar').classList.remove('hidden');
+
   const content = document.getElementById('content');
 
   content.innerHTML = `
-    <h2>✍️ Écriture</h2>
+    <h2>✍️ ${file}</h2>
 
-    <textarea id="textEditor" style="height:400px;"></textarea>
+    <div class="editor-toolbar">
+      <button onclick="formatText('bold')">Gras</button>
+      <button onclick="formatText('italic')">Italic</button>
+      <button onclick="formatText('underline')">Souligné</button>
+    </div>
+
+    <div id="editor" contenteditable="true"></div>
 
     <button onclick="saveText('${file}')">💾 Sauvegarder</button>
+    <button onclick="exportDocx('${file}')">📄 Export Word</button>
   `;
 
   fetch(`/api/texte/${currentBook}/${file}`)
     .then(res => res.text())
     .then(text => {
-      document.getElementById('textEditor').value = text;
+      document.getElementById('editor').innerText = text;
     });
+
+  loadChapters();
 }
 
 async function saveText(file) {
-  const text = document.getElementById('textEditor').value;
+  const text = document.getElementById('editor').innerText;
 
   await fetch(`/api/texte/save/${currentBook}/${file}`, {
     method: 'POST',
@@ -706,7 +717,41 @@ function exportDocx(file = "chapitre1.txt") {
   window.open(`/api/export/${currentBook}/${file}`);
 }
 
+async function loadChapters() {
+  const res = await fetch(`/api/texte/${currentBook}`);
+  const files = await res.json();
 
+  const list = document.getElementById('chaptersList');
+  list.innerHTML = '';
+
+  files.forEach(file => {
+    const div = document.createElement('div');
+    div.textContent = file;
+
+    div.onclick = () => loadTextEditor(file);
+
+    list.appendChild(div);
+  });
+}
+
+function formatText(command) {
+  document.execCommand(command, false, null);
+}
+
+async function createChapter() {
+  const name = prompt("Nom du chapitre ?");
+  if (!name) return;
+
+  const file = name.replace(/\s+/g, '-') + '.txt';
+
+  await fetch(`/api/texte/save/${currentBook}/${file}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: "" })
+  });
+
+  loadChapters();
+}
 
 
 goHome();
