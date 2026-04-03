@@ -670,6 +670,42 @@ async function getSynonyms() {
   });
 }
 
+function loadTextEditor(file = "chapitre1.txt") {
+  const content = document.getElementById('content');
+
+  content.innerHTML = `
+    <h2>✍️ Écriture</h2>
+
+    <textarea id="textEditor" style="height:400px;"></textarea>
+
+    <button onclick="saveText('${file}')">💾 Sauvegarder</button>
+  `;
+
+  fetch(`/api/texte/${currentBook}/${file}`)
+    .then(res => res.text())
+    .then(text => {
+      document.getElementById('textEditor').value = text;
+    });
+}
+
+async function saveText(file) {
+  const text = document.getElementById('textEditor').value;
+
+  await fetch(`/api/texte/save/${currentBook}/${file}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ content: text })
+  });
+
+  alert("Sauvegardé !");
+}
+
+function exportDocx(file = "chapitre1.txt") {
+  window.open(`/api/export/${currentBook}/${file}`);
+}
+
 
 
 

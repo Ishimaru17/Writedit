@@ -117,6 +117,60 @@ app.get('/api/wiki/:livre', (req, res) => {
 // servir les images wiki
 app.use('/wiki', express.static(path.join(__dirname, 'data', 'livres')));
 
+app.get('/api/texte/:livre/:file', (req, res) => {
+  const { livre, file } = req.params;
+
+  const filePath = path.join(__dirname, 'data', 'livres', livre, 'texte', file);
+
+  if (!fs.existsSync(filePath)) {
+    return res.send('');
+  }
+
+  const content = fs.readFileSync(filePath, 'utf-8');
+  res.send(content);
+});
+
+app.post('/api/texte/save/:livre/:file', (req, res) => {
+  const { livre, file } = req.params;
+  const { content } = req.body;
+
+  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'texte');
+
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+
+  const filePath = path.join(dirPath, file);
+
+  fs.writeFileSync(filePath, content);
+
+  res.json({ success: true });
+});
+
+const { Document, Packer, Paragraph } = require('docx');
+
+app.get('/api/export/:livre/:file', async (req, res) => {
+  const { livre, file } = req.params;
+
+  const filePath = path.join(__dirname, 'data', 'livres', livre, 'texte', file);
+
+  const text = fs.readFileSync(filePath, 'utf-8');
+
+  const doc = new Document({
+    sections: [{
+      children: text.split('\n').map(line => new Paragraph(line))
+    }]
+  });
+
+  const buffer = await Packer.toBuffer(doc);
+
+  res.setHeader('Content-Disposition', `attachment; filename=${file}.docx`);
+  res.send(buffer);
+});
+
+function exportDocx(file = "chapitre1.txt") {
+  window.open(`/api/export/${currentBook}/${file}`);
+}
 
 
 app.listen(PORT, () => {
