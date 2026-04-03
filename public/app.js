@@ -19,6 +19,8 @@ function goHome() {
       </div>
     </div>
   `;
+
+  hideChaptersSidebar();
 }
 
 function selectBook(book) {
@@ -113,7 +115,7 @@ function showDetail(index) {
               <input id="occupation" value="${char.occupation || ''}">
             </div>
             <div>
-              <label>Ame soeur</label>
+              <label>Ame soeur/Familier</label>
               <input id="amesoeur" value="${char.amesoeur || ''}">
             </div>
             <div>
@@ -391,6 +393,8 @@ async function loadCharacters() {
 
     content.appendChild(card);
   });
+
+  hideChaptersSidebar();
 }
 
 async function saveCharacter(index) {
@@ -570,6 +574,8 @@ async function loadWiki() {
 
     grid.appendChild(card);
   });
+
+  hideChaptersSidebar();
 }
 
 function openWiki(file) {
@@ -620,6 +626,8 @@ function loadTranslator() {
     <h3>Résultat</h3>
     <textarea id="translateOutput" readonly></textarea>
   `;
+
+  hideChaptersSidebar();
 }
 
 function translateText() {
@@ -646,6 +654,8 @@ function loadSynonyms() {
     <h3>Résultats</h3>
     <div id="synonymResults"></div>
   `;
+
+  hideChaptersSidebar();
 }
 
 async function getSynonyms() {
@@ -684,6 +694,8 @@ function loadTextEditor(file = "chapitre1.txt") {
       <button onclick="formatText('underline')">Souligné</button>
     </div>
 
+    <p id="wordCount">0 mots</p>
+
     <div id="editor" contenteditable="true"></div>
 
     <button onclick="saveText('${file}')">💾 Sauvegarder</button>
@@ -693,25 +705,38 @@ function loadTextEditor(file = "chapitre1.txt") {
   fetch(`/api/texte/${currentBook}/${file}`)
     .then(res => res.text())
     .then(text => {
-      document.getElementById('editor').innerText = text;
+      document.getElementById('editor').innerHTML = text;
     });
 
   loadChapters();
+
+  let saveTimeout;
+
+  document.getElementById('editor').addEventListener('input', () => {
+    clearTimeout(saveTimeout);
+
+    saveTimeout = setTimeout(() => {
+      saveText(file);
+      console.log("Auto-save");
+    }, 2000); // 2 secondes après arrêt frappe
+  });
+
+  document.getElementById('editor').addEventListener('input', () => {
+  updateWordCount();
+});
+
 }
 
 async function saveText(file) {
-  const text = document.getElementById('editor').innerText;
+  const text = document.getElementById('editor').innerHTML;
 
   await fetch(`/api/texte/save/${currentBook}/${file}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content: text })
   });
-
-  alert("Sauvegardé !");
 }
+
 
 function exportDocx(file = "chapitre1.txt") {
   window.open(`/api/export/${currentBook}/${file}`);
@@ -720,6 +745,12 @@ function exportDocx(file = "chapitre1.txt") {
 async function loadChapters() {
   const res = await fetch(`/api/texte/${currentBook}`);
   const files = await res.json();
+  files.sort((a, b) => {
+    const numA = parseInt(a.match(/\d+/));
+    const numB = parseInt(b.match(/\d+/));
+    return numA - numB;
+  });
+
 
   const list = document.getElementById('chaptersList');
   list.innerHTML = '';
@@ -751,6 +782,17 @@ async function createChapter() {
   });
 
   loadChapters();
+}
+
+function hideChaptersSidebar() {
+  document.getElementById('chaptersSidebar').classList.add('hidden');
+}
+
+function updateWordCount() {
+  const text = document.getElementById('editor').innerText;
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+
+  document.getElementById('wordCount').textContent = words.length + " mots";
 }
 
 
