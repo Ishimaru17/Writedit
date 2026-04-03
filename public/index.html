@@ -31,11 +31,23 @@
   </main>
 
   <aside id="chaptersSidebar" class="hidden">
-    <h3>Chapitres</h3>
+
+  <div class="sidebar-section">
+    <h3>📖 Chapitres</h3>
     <div id="chaptersList"></div>
     <button onclick="createChapter()">➕ Nouveau</button>
+  </div>
+
+  <div class="sidebar-section">
+    <h3>👤 Personnages</h3>
+    <div id="charactersList"></div>
+    <div id="characterDetails"></div>
+    <button onclick="createCharacter()">➕ Nouveau</button>
+    <!--<button onclick="insertCharacter()">➕ Insert</button>-->
+  </div>
+
   </aside>
-  
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

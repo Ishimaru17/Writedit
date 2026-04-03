@@ -2,6 +2,7 @@ let characters = [];
 let currentBook = null;
 let lastWordCount = 0;
 let isLoading = false;
+let currentChar = null;
 
 
 function goHome() {
@@ -688,8 +689,24 @@ async function getSynonyms() {
   });
 }
 
-function loadTextEditor(file = "chapitre1.txt") {
+async function loadTextEditor(file = null) {
   document.getElementById('chaptersSidebar').classList.remove('hidden');
+
+
+  const res = await fetch(`/api/texte/${currentBook}`);
+  const files = await res.json();
+
+  // tri numérique
+  files.sort((a, b) => {
+    const numA = parseInt(a.match(/\d+/));
+    const numB = parseInt(b.match(/\d+/));
+    return numA - numB;
+  });
+
+  // 👉 prendre le dernier
+  if (!file) {
+    file = files[files.length - 1];
+  }
 
   const content = document.getElementById('content');
 
@@ -725,6 +742,7 @@ function loadTextEditor(file = "chapitre1.txt") {
     });
 
   loadChapters();
+  loadCharactersSidebar();
 
   let saveTimeout;
 
@@ -767,6 +785,23 @@ function loadTextEditor(file = "chapitre1.txt") {
     });
 
     lastWordCount = countWords(editor.innerText);
+
+    let quoteOpen = true;
+
+    editor.addEventListener('keydown', (e) => {
+      if (e.key === '"') {
+        e.preventDefault();
+
+        if (quoteOpen) {
+          document.execCommand('insertText', false, '« ');
+        } else {
+          document.execCommand('insertText', false, ' »');
+        }
+
+        quoteOpen = !quoteOpen;
+      }
+    });
+
   }
 
 async function saveText(file) {
@@ -866,6 +901,9 @@ async function loadStats() {
   const today = new Date().toISOString().split('T')[0];
   const dayStats = stats[today] || { written: 0, net: 0 };
 
+  const totalRes = await fetch(`/api/totalWords/${currentBook}`);
+  const totalData = await totalRes.json();
+
   const goal = 300;
   const percent = Math.min((dayStats.net / goal) * 100, 100);
 
@@ -882,7 +920,96 @@ async function loadStats() {
         ${Math.floor(percent)}%
       </div>
     </div>
+
+    <p>📚 Total histoire : ${totalData.total} mots</p>
   `;
 }
+
+async function loadCharactersSidebar() {
+  const res = await fetch(`/api/personnages/${currentBook}`);
+  const characters = await res.json();
+
+  const list = document.getElementById('charactersList');
+  list.innerHTML = '';
+
+  characters.forEach(char => {
+    const div = document.createElement('div');
+    div.className = 'sidebar-char';
+
+    div.textContent = `${char.prenom} ${char.nom}`;
+
+    div.onclick = () => showCharacterDetails(char);
+
+    list.appendChild(div);
+  });
+}
+
+function showCharacterInline(char) {
+  const editor = document.getElementById('editor');
+
+  const text = `
+    --- PERSONNAGE ---
+    Nom: ${char.prenom} ${char.nom}
+    Race: ${char.race}
+    Sexe: ${char.sexe}
+    Age: ${char.age}
+    Description: ${char.description}
+    `;
+
+  document.execCommand('insertText', false, text);
+}
+
+function showCharacterDetails(char) {
+  currentChar = char;
+  const container = document.getElementById('characterDetails');
+
+  container.innerHTML = `
+    <strong>${char.prenom} ${char.nom}</strong><br><br>
+
+    <strong>Etat Civil</strong><br>
+    Surnoms: ${char.surnoms || ''}<br>
+    Race: ${char.race || ''}<br>
+    Age: ${char.age || ''}<br>
+    Ame soeur: ${char.amesoeur || ''}<br><br>
+
+    <strong>Apparence</strong><br>
+    Taille: ${char.taille || ''}<br>
+    Corpulence: ${char.corpulence || ''}<br>
+    Couleur peau: ${char.couleurp || ''}<br>
+    Couleur yeux: ${char.couleury || ''}<br>
+    Couleur cheveux: ${char.couleurc || ''}<br>
+    Eancrage: ${char.eancrage || ''}<br>
+    Tatouage: ${char.tatouage || ''}<br>
+    Cicatrise: ${char.cicatrise || ''}<br>
+    Description: ${char.description || ''}<br><br>
+
+
+    <strong>Profil</strong><br>
+    Expressions: ${char.expressions || ''}<br>
+    Pouvoirs: ${char.pouvoirs || ''}<br>
+    Secrets: ${char.secrets || ''}<br>
+    Buts: ${char.buts || ''}<br><br>
+
+    <strong>Stats</strong><br>
+    Intelligence: ${char.stats.intelligence || 0}<br>
+    Agilité: ${char.stats.agilite || 0}<br>
+    Force: ${char.stats.force || 0}<br>
+    Robustesse: ${char.stats.robustesse || 0}<br>
+    Sociabilité: ${char.stats.sociabilite || 0}<br>
+    Empathie: ${char.stats.empathie || 0}<br>
+    Perception: ${char.stats.perception || 0}<br><br>
+  `;
+}
+
+function insertCharacter() {
+  if (!currentChar) return;
+
+  document.execCommand(
+    'insertText',
+    false,
+    `${currentChar.prenom} ${currentChar.nom}`
+  );
+}
+
 
 goHome();

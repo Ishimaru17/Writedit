@@ -201,12 +201,35 @@ h3 {
 
 /*chaptersidebar*/
 #chaptersSidebar {
-  width: 200px;
-  background: rgba(20,20,20,0.9);
+  width: 250px;
+  background: rgba(20,20,20,0.95);
   color: white;
-  padding: 10px;
-  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
+
+.sidebar-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.sidebar-char {
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.sidebar-char:hover {
+  background: rgba(255,255,255,0.2);
+}
+
 
 #chaptersSidebar.hidden {
   display: none;
@@ -231,8 +254,25 @@ h3 {
   font-family: Bookman Old Style;
 }
 
+.editor-toolbar {
+  position: fixed;
+  top: 115px; /* hauteur du header */
+  left: 240px; /* largeur sidebar gauche */
+  right: 200px; /* largeur sidebar droite */
+  padding: 20px;
+  z-index: 10;
+  
+}
+
 .editor-toolbar button {
   margin-right: 5px;
 }
 
+#characterDetails {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  font-size: 14px;
+}
 
