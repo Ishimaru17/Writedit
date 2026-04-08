@@ -18,6 +18,9 @@
     <button onclick="loadTranslator()">🌍 Traducteur</button>
     <button onclick="loadSynonyms()">💡 Synonymes</button>
     <button onclick="loadStats()">📊 Stats</button>
+    <input id="searchInput" placeholder="Rechercher...">
+    <button onclick="search()">🔎</button>
+
   </aside>
 
   <main id="main-content">
@@ -31,6 +34,12 @@
   </main>
 
   <aside id="chaptersSidebar" class="hidden">
+
+  <div class="editor-tools-sidebar">
+    <button onclick="formatText('bold')">Gras</button>
+    <button onclick="formatText('italic')">Italic</button>
+    <button onclick="formatText('underline')">Souligné</button>
+   </div>
 
   <div class="sidebar-section">
     <h3>📖 Chapitres</h3>

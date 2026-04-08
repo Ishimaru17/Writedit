@@ -268,6 +268,35 @@ app.get('/api/totalWords/:livre', (req, res) => {
   res.json({ total });
 });
 
+app.get('/api/search/:livre', (req, res) => {
+  const { livre } = req.params;
+  const query = req.query.q?.toLowerCase();
+
+  const dirPath = path.join(__dirname, 'data/livres', livre, 'texte');
+
+  if (!fs.existsSync(dirPath)) {
+    return res.json([]);
+  }
+
+  const files = fs.readdirSync(dirPath);
+
+  const results = [];
+
+  files.forEach(file => {
+    const text = fs.readFileSync(path.join(dirPath, file), 'utf-8');
+
+    if (text.toLowerCase().includes(query)) {
+      results.push({
+        file,
+        preview: text.substring(0, 200)
+      });
+    }
+  });
+
+  res.json(results);
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);

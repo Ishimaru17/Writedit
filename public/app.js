@@ -373,20 +373,26 @@ function showDetail(index) {
   }, 0);
 }
 
-async function loadCharacters() {
+async function fetchCharacters() {
   const res = await fetch(`/api/personnages/${currentBook}`);
   characters = await res.json();
+
   characters.sort((a, b) => {
     return Number(a.filename) - Number(b.filename);
   });
+}
 
-  
+async function loadCharacters() {
+  await fetchCharacters();
+
   const content = document.getElementById('content');
   content.innerHTML = `
-      <h2>Personnages</h2>
-      <button onclick="createCharacter()">➕ Nouveau personnage</button>
-      <div class="grid"></div>
-    `;
+    <h2>Personnages</h2>
+    <button onclick="createCharacter()">➕ Nouveau personnage</button>
+    <div class="grid" id="charactersGrid"></div>
+  `;
+
+  const grid = document.getElementById('charactersGrid');
 
   characters.forEach((char, index) => {
     const card = document.createElement('div');
@@ -397,10 +403,9 @@ async function loadCharacters() {
       <h3>${char.prenom} ${char.nom}</h3>
     `;
 
-
     card.onclick = () => showDetail(index);
 
-    content.appendChild(card);
+    grid.appendChild(card);
   });
 
   hideChaptersSidebar();
@@ -713,11 +718,7 @@ async function loadTextEditor(file = null) {
   content.innerHTML = `
     <h2>✍️ ${file}</h2>
 
-    <div class="editor-toolbar">
-      <button onclick="formatText('bold')">Gras</button>
-      <button onclick="formatText('italic')">Italic</button>
-      <button onclick="formatText('underline')">Souligné</button>
-    </div>
+    <div id="saveStatus">📝 En cours...</div>
 
     <p id="wordCount">0 mots</p>
 
@@ -725,13 +726,22 @@ async function loadTextEditor(file = null) {
 
     <button onclick="saveText('${file}')">💾 Sauvegarder</button>
     <button onclick="exportDocx('${file}')">📄 Export Word</button>
+    <button id="scrollTopBtn" onclick="scrollEditorTop()">⬆ Haut</button>
+
   `;
 
   isLoading = true;
 
+  await loadChapters();
+  await fetchCharacters();
+  loadCharactersSidebar();
+
   fetch(`/api/texte/${currentBook}/${file}`)
     .then(res => res.text())
     .then(text => {
+
+      text = linkCharacters(text, characters); // 👈 IMPORTANT
+
       document.getElementById('editor').innerHTML = text;
 
       const initialCount = countWords(editor.innerText);
@@ -741,17 +751,16 @@ async function loadTextEditor(file = null) {
       isLoading = false;
     });
 
-  loadChapters();
-  loadCharactersSidebar();
-
   let saveTimeout;
 
   document.getElementById('editor').addEventListener('input', () => {
     clearTimeout(saveTimeout);
 
+    showSaveStatus("📝 En cours...");
+
     saveTimeout = setTimeout(() => {
       saveText(file);
-      console.log("Auto-save");
+      showSaveStatus("💾 Sauvegardé");
     }, 2000); // 2 secondes après arrêt frappe
   });
 
@@ -802,7 +811,41 @@ async function loadTextEditor(file = null) {
       }
     });
 
-  }
+    document.addEventListener('click', (e) => {
+      console.log("CLICK", e.target);
+      console.log(e.target.dataset.id);
+      if (e.target.classList.contains('char-link')) {
+        console.log("CHAR CLICKED");
+
+        const id = e.target.dataset.id;
+
+        const char = characters.find(c => c.filename === id);
+
+        if (char) {
+          showCharacterDetails(char);
+        } else {
+          console.log("NOT FOUND", id);
+        }
+      }
+    });
+
+
+}
+
+function linkCharacters(text, characters) {
+
+  characters.forEach(char => {
+    const prenom = char.prenom;
+
+    const regex = new RegExp(`\\b${prenom}\\b`, 'g');
+
+    text = text.replace(regex,
+      `<span class="char-link" data-id="${char.filename}">${prenom}</span>`
+    );
+  });
+
+  return text;
+}
 
 async function saveText(file) {
   const text = document.getElementById('editor').innerHTML;
@@ -823,7 +866,6 @@ function countWords(text) {
     .split(/\s+/)
     .filter(w => w.length > 0).length;
 }
-
 
 function exportDocx(file = "chapitre1.txt") {
   window.open(`/api/export/${currentBook}/${file}`);
@@ -961,6 +1003,7 @@ function showCharacterInline(char) {
 
 function showCharacterDetails(char) {
   currentChar = char;
+  console.log(currentChar)
   const container = document.getElementById('characterDetails');
 
   container.innerHTML = `
@@ -1009,6 +1052,48 @@ function insertCharacter() {
     false,
     `${currentChar.prenom} ${currentChar.nom}`
   );
+}
+
+function showSaveStatus(text) {
+  const el = document.getElementById('saveStatus');
+  el.textContent = text;
+  el.style.opacity = 1;
+
+  setTimeout(() => {
+    el.style.opacity = 0;
+  }, 1500);
+}
+
+async function search() {
+  const q = document.getElementById('searchInput').value;
+
+  const res = await fetch(`/api/search/${currentBook}?q=${q}`);
+  const results = await res.json();
+
+  const content = document.getElementById('content');
+
+  content.innerHTML = `<h2>Résultats</h2>`;
+
+  results.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'card';
+
+    div.innerHTML = `
+      <h3>${r.file}</h3>
+      <p>${r.preview}...</p>
+    `;
+
+    div.onclick = () => loadTextEditor(r.file);
+
+    content.appendChild(div);
+  });
+}
+
+function scrollEditorTop() {
+  document.getElementById('content').scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
 }
 
 
