@@ -736,6 +736,8 @@ async function loadTextEditor(file = null) {
   await fetchCharacters();
   loadCharactersSidebar();
 
+
+
   fetch(`/api/texte/${currentBook}/${file}`)
     .then(res => res.text())
     .then(text => {
@@ -828,6 +830,12 @@ async function loadTextEditor(file = null) {
         }
       }
     });
+
+    
+  const colorRes = await fetch(`/api/chapters/color/${currentBook}/${file}`);
+  const colorData = await colorRes.json();
+
+  editor.style.background = colorData.color || 'white';
 
 
 }
@@ -1093,6 +1101,22 @@ function scrollEditorTop() {
   document.getElementById('content').scrollTo({
     top: 0,
     behavior: 'smooth'
+  });
+}
+
+async function setChapterColor(color) {
+  const editor = document.getElementById('editor');
+  editor.style.background = color;
+
+  await fetch(`/api/chapters/color/${currentBook}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      file: currentFile,
+      color
+    })
   });
 }
 
