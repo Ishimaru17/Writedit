@@ -1098,11 +1098,16 @@ async function search() {
 }
 
 function scrollEditorTop() {
-  document.getElementById('content').scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
+  const editor = document.getElementById('editor');
+
+  if (editor) {
+    editor.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
 }
+
 
 async function setChapterColor(color) {
   const editor = document.getElementById('editor');

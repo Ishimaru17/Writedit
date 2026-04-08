@@ -297,6 +297,59 @@ app.get('/api/search/:livre', (req, res) => {
 });
 
 
+// =============================
+// Couleurs de chapitres
+// =============================
+
+app.get('/api/chapters/color/:livre/:file', (req, res) => {
+  const { livre, file } = req.params;
+
+  const colorPath = path.join(
+    __dirname,
+    'data/livres',
+    livre,
+    'chapterColors.json'
+  );
+
+  if (!fs.existsSync(colorPath)) {
+    return res.json({ color: 'white' });
+  }
+
+  const colors = JSON.parse(fs.readFileSync(colorPath, 'utf-8'));
+
+  res.json({
+    color: colors[file] || 'white'
+  });
+});
+
+
+app.post('/api/chapters/color/:livre', (req, res) => {
+  const { livre } = req.params;
+  const { file, color } = req.body;
+
+  const colorPath = path.join(
+    __dirname,
+    'data/livres',
+    livre,
+    'chapterColors.json'
+  );
+
+  let colors = {};
+
+  if (fs.existsSync(colorPath)) {
+    colors = JSON.parse(fs.readFileSync(colorPath, 'utf-8'));
+  }
+
+  colors[file] = color;
+
+  fs.writeFileSync(
+    colorPath,
+    JSON.stringify(colors, null, 2)
+  );
+
+  res.json({ success: true });
+});
+
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);

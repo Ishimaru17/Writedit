@@ -338,9 +338,15 @@ h3 {
 }
 
 .chapter-colors button {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  border: 2px solid #ccc;
+  border: 2px solid #555;
   cursor: pointer;
+
+  transition: transform 0.2s;
+}
+
+.chapter-colors button:hover {
+  transform: scale(1.15);
 }
