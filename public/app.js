@@ -713,6 +713,8 @@ async function loadTextEditor(file = null) {
     file = files[files.length - 1];
   }
 
+  currentFile = file;
+
   const content = document.getElementById('content');
 
   content.innerHTML = `
@@ -831,13 +833,11 @@ async function loadTextEditor(file = null) {
       }
     });
 
-    
+
   const colorRes = await fetch(`/api/chapters/color/${currentBook}/${file}`);
   const colorData = await colorRes.json();
 
   editor.style.background = colorData.color || 'white';
-
-
 }
 
 function linkCharacters(text, characters) {
@@ -1109,7 +1109,7 @@ function scrollEditorTop() {
 }
 
 
-async function setChapterColor(color) {
+async function setChapterColor(color, clickedButton) {
   const editor = document.getElementById('editor');
   editor.style.background = color;
 
@@ -1123,7 +1123,18 @@ async function setChapterColor(color) {
       color
     })
   });
+
+  document.querySelectorAll('.chapter-colors button')
+    .forEach(btn => btn.classList.remove('active'));
+
+  if (clickedButton) {
+    clickedButton.classList.add('active');
+  }
 }
+
+
+
+
 
 
 goHome();
