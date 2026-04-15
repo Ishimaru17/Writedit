@@ -1021,7 +1021,8 @@ function showCharacterDetails(char) {
     Surnoms: ${char.surnoms || ''}<br>
     Race: ${char.race || ''}<br>
     Age: ${char.age || ''}<br>
-    Ame soeur: ${char.amesoeur || ''}<br><br>
+    Ame soeur: ${char.amesoeur || ''}<br>
+    Situation: ${char.sfamille || ''}<br><br>
 
     <strong>Apparence</strong><br>
     Taille: ${char.taille || ''}<br>
