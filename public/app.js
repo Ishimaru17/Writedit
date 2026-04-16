@@ -845,11 +845,13 @@ function linkCharacters(text, characters) {
   characters.forEach(char => {
     const prenom = char.prenom;
 
-    const regex = new RegExp(`\\b${prenom}\\b`, 'g');
+    const regex = new RegExp(`(^|[\\s.,!?;:()"'«»])(${prenom})(?=[\\s.,!?;:()"'«»]|$)`, 'giu');
+
 
     text = text.replace(regex,
-      `<span class="char-link" data-id="${char.filename}">${prenom}</span>`
+      `$1<span class="char-link" data-id="${char.filename}">$2</span>`
     );
+
   });
 
   return text;
