@@ -1136,6 +1136,10 @@ async function setChapterColor(color, clickedButton) {
 }
 
 
+function exportAll() {
+  window.open(`/api/full-export/${currentBook}`);
+}
+
 
 
 

@@ -147,7 +147,7 @@ app.post('/api/texte/save/:livre/:file', (req, res) => {
   res.json({ success: true });
 });
 
-const { Document, Packer, Paragraph } = require('docx');
+const { Document, Packer, Paragraph, TextRun  } = require('docx');
 
 app.get('/api/export/:livre/:file', async (req, res) => {
   const { livre, file } = req.params;
@@ -348,6 +348,107 @@ app.post('/api/chapters/color/:livre', (req, res) => {
   );
 
   res.json({ success: true });
+});
+
+
+//const { Document, Packer, Paragraph, TextRun } = require("docx");
+
+app.get('/api/full-export/:livre', async (req, res) => {
+  console.log("REQ PARAMS =", req.params);
+  const { livre } = req.params;
+
+  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'texte');
+  
+
+  let files = fs.readdirSync(dirPath);
+
+  // tri numérique
+  files.sort((a, b) => {
+    const numA = parseInt(a.match(/\d+/));
+    const numB = parseInt(b.match(/\d+/));
+    return numA - numB;
+  });
+
+  const paragraphs = [];
+
+  files.forEach((file, index) => {
+    let text = fs.readFileSync(path.join(dirPath, file), 'utf-8');
+
+    // supprimer liens personnages
+    text = text.replace(/<span class="char-link".*?>(.*?)<\/span>/gi, '$1');
+
+    // convertir espaces HTML
+    text = text.replace(/&nbsp;/g, ' ');
+
+    // convertir <br>
+    text = text.replace(/<br\s*\/?>/gi, '\n');
+
+    // supprimer div/p parasites
+    text = text.replace(/<\/div>/gi, '\n');
+    text = text.replace(/<div>/gi, '');
+
+    text = text.replace(/<\/p>/gi, '\n');
+    text = text.replace(/<p>/gi, '');
+
+    // retirer HTML restant
+    text = text.replace(/<[^>]+>/g, '');
+
+
+    // 🔥 Nettoyage HTML (persos etc)
+    text = text.replace(/<span class="char-link".*?>(.*?)<\/span>/g, '$1');
+
+    // 🔥 conversion HTML → docx simple
+    const lines = text.split(/\n|<br>/);
+
+    lines.forEach(line => {
+
+      const runs = [];
+
+      // gras
+      if (line.includes('<b>') || line.includes('<strong>')) {
+        line = line.replace(/<\/?b>/g, '');
+        line = line.replace(/<\/?strong>/g, '');
+        runs.push(new TextRun({ text: line, bold: true }));
+      }
+      // italic
+      else if (line.includes('<i>')) {
+        line = line.replace(/<\/?i>/g, '');
+        runs.push(new TextRun({ text: line, italics: true }));
+      }
+      // underline
+      else if (line.includes('<u>')) {
+        line = line.replace(/<\/?u>/g, '');
+        runs.push(new TextRun({ text: line, underline: {} }));
+      }
+      else {
+        runs.push(new TextRun(line));
+      }
+
+      paragraphs.push(new Paragraph({ children: runs }));
+    });
+
+    // saut de page sauf dernier
+    if (index < files.length - 1) {
+      paragraphs.push(
+        new Paragraph({
+          children: [],
+          pageBreakBefore: true
+        })
+      );
+    }
+  });
+
+  const doc = new Document({
+    sections: [{
+      properties: {},
+      children: paragraphs
+    }]
+  });
+
+  const buffer = await Packer.toBuffer(doc);
+
+  res.setHeader('Content-Disposition', `attachment; filename=${livre}.docx`);
+  res.send(buffer);
 });
 
 
