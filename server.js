@@ -147,7 +147,7 @@ app.post('/api/texte/save/:livre/:file', (req, res) => {
   res.json({ success: true });
 });
 
-const { Document, Packer, Paragraph, TextRun  } = require('docx');
+const { Document, Packer, Paragraph, TextRun, AlignmentType } = require('docx');
 
 app.get('/api/export/:livre/:file', async (req, res) => {
   const { livre, file } = req.params;
@@ -404,27 +404,68 @@ app.get('/api/full-export/:livre', async (req, res) => {
 
       const runs = [];
 
-      // gras
-      if (line.includes('<b>') || line.includes('<strong>')) {
-        line = line.replace(/<\/?b>/g, '');
-        line = line.replace(/<\/?strong>/g, '');
-        runs.push(new TextRun({ text: line, bold: true }));
-      }
-      // italic
-      else if (line.includes('<i>')) {
-        line = line.replace(/<\/?i>/g, '');
-        runs.push(new TextRun({ text: line, italics: true }));
-      }
-      // underline
-      else if (line.includes('<u>')) {
-        line = line.replace(/<\/?u>/g, '');
-        runs.push(new TextRun({ text: line, underline: {} }));
-      }
-      else {
-        runs.push(new TextRun(line));
-      }
+      const parts = line.split(/(<\/?b>|<\/?strong>|<\/?i>|<\/?u>)/i);
 
-      paragraphs.push(new Paragraph({ children: runs }));
+      let bold = false;
+      let italic = false;
+      let underline = false;
+
+      parts.forEach(part => {
+
+        if (!part) return;
+
+        const lower = part.toLowerCase();
+
+        if (lower === '<b>' || lower === '<strong>') {
+          bold = true;
+          return;
+        }
+
+        if (lower === '</b>' || lower === '</strong>') {
+          bold = false;
+          return;
+        }
+
+        if (lower === '<i>') {
+          italic = true;
+          return;
+        }
+
+        if (lower === '</i>') {
+          italic = false;
+          return;
+        }
+
+        if (lower === '<u>') {
+          underline = true;
+          return;
+        }
+
+        if (lower === '</u>') {
+          underline = false;
+          return;
+        }
+
+        const clean = part.replace(/<[^>]+>/g, '');
+
+        if (!clean) return;
+
+        runs.push(new TextRun({
+          text: clean,
+          bold,
+          italics: italic,
+          underline: underline ? {} : undefined
+        }));
+
+      });
+
+      paragraphs.push(
+        new Paragraph({
+          children: runs,
+          alignment: AlignmentType.JUSTIFIED
+        })
+      );
+
     });
 
     // saut de page sauf dernier
