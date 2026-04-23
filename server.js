@@ -391,19 +391,21 @@ app.get('/api/full-export/:livre', async (req, res) => {
     text = text.replace(/<p>/gi, '');
 
     // retirer HTML restant
-    text = text.replace(/<[^>]+>/g, '');
+    //text = text.replace(/<[^>]+>/g, '');
 
 
     // 🔥 Nettoyage HTML (persos etc)
-    text = text.replace(/<span class="char-link".*?>(.*?)<\/span>/g, '$1');
+    //text = text.replace(/<span class="char-link".*?>(.*?)<\/span>/g, '$1');
 
     // 🔥 conversion HTML → docx simple
-    const lines = text.split(/\n|<br>/);
+    //const lines = text.split(/\n|<br>/);
+    const lines = text.split('\n');
 
     lines.forEach(line => {
 
       const runs = [];
 
+      //const parts = line.split(/(<\/?b>|<\/?strong>|<\/?i>|<\/?u>|<br\s*\/?>)/i);
       const parts = line.split(/(<\/?b>|<\/?strong>|<\/?i>|<\/?u>)/i);
 
       let bold = false;
