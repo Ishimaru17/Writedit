@@ -371,41 +371,74 @@ app.get('/api/full-export/:livre', async (req, res) => {
 
   const paragraphs = [];
 
-  files.forEach((file, index) => {
+   files.forEach((file, index) => {
     let text = fs.readFileSync(path.join(dirPath, file), 'utf-8');
 
-    // supprimer liens personnages
+    // =======================
+    // 🔥 NETTOYAGE WORD + HTML
+    // =======================
+
     text = text.replace(/<span class="char-link".*?>(.*?)<\/span>/gi, '$1');
 
-    // convertir espaces HTML
+    text = text.replace(/<span[\s\S]*?>/gi, '');
+    text = text.replace(/<\/span>/gi, '');
+
+    text = text.replace(/<o:p>\s*<\/o:p>/gi, '');
+    text = text.replace(/<o:p>/gi, '');
+    text = text.replace(/<\/o:p>/gi, '');
+
     text = text.replace(/&nbsp;/g, ' ');
 
-    // convertir <br>
     text = text.replace(/<br\s*\/?>/gi, '\n');
 
-    // supprimer div/p parasites
-    text = text.replace(/<\/div>/gi, '\n');
-    text = text.replace(/<div>/gi, '');
+    text = text.replace(/<\/p>/gi, '\n\n');
+    text = text.replace(/<p[^>]*>/gi, '');
 
-    text = text.replace(/<\/p>/gi, '\n');
-    text = text.replace(/<p>/gi, '');
+    text = text.replace(/<\/div>/gi, '\n\n');
+    text = text.replace(/<div[^>]*>/gi, '');
 
-    // retirer HTML restant
-    //text = text.replace(/<[^>]+>/g, '');
+    // garder seulement b / i / u
+    text = text.replace(/<(?!\/?(b|strong|i|u)\b)[^>]+>/gi, '');
+
+    // =======================
+    // 🔥 RÉPARATION TEXTE (UNE SEULE FOIS)
+    // =======================
+
+    text = text.replace(/\r\n/g, '\n');
+
+    let rawLines = text.split('\n');
+    let rebuilt = '';
+
+    for (let i = 0; i < rawLines.length; i++) {
+      let line = rawLines[i].trim();
+
+      if (!line) {
+        rebuilt += '\n\n';
+        continue;
+      }
+
+      if (!line.match(/[.!?:»"]$/)) {
+        rebuilt += line + ' ';
+      } else {
+        rebuilt += line + '\n';
+      }
+    }
+
+    text = rebuilt.trim();
 
 
-    // 🔥 Nettoyage HTML (persos etc)
-    //text = text.replace(/<span class="char-link".*?>(.*?)<\/span>/g, '$1');
+    // =======================
+    // 🔥 CONVERSION DOCX
+    // =======================
 
-    // 🔥 conversion HTML → docx simple
-    //const lines = text.split(/\n|<br>/);
-    const lines = text.split('\n');
+    const finalLines = text.split('\n');
 
-    lines.forEach(line => {
+    finalLines.forEach(line => {
+
+      if (!line.trim()) return;
 
       const runs = [];
 
-      //const parts = line.split(/(<\/?b>|<\/?strong>|<\/?i>|<\/?u>|<br\s*\/?>)/i);
       const parts = line.split(/(<\/?b>|<\/?strong>|<\/?i>|<\/?u>)/i);
 
       let bold = false;
@@ -450,7 +483,7 @@ app.get('/api/full-export/:livre', async (req, res) => {
 
         const clean = part.replace(/<[^>]+>/g, '');
 
-        if (!clean) return;
+        if (!clean.trim()) return;
 
         runs.push(new TextRun({
           text: clean,
@@ -461,12 +494,18 @@ app.get('/api/full-export/:livre', async (req, res) => {
 
       });
 
-      paragraphs.push(
-        new Paragraph({
-          children: runs,
-          alignment: AlignmentType.JUSTIFIED
-        })
-      );
+      if (runs.length > 0) {
+        paragraphs.push(
+          new Paragraph({
+            children: runs,
+            alignment: AlignmentType.JUSTIFIED,
+            spacing: {
+              after: 200,   // espace après (≈ 10pt)
+              line: 300     // interligne
+            }
+          })
+        );
+      }
 
     });
 
