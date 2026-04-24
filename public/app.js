@@ -3,6 +3,8 @@ let currentBook = null;
 let lastWordCount = 0;
 let isLoading = false;
 let currentChar = null;
+let currentStatsMonth = new Date().getMonth();
+let currentStatsYear = new Date().getFullYear();
 
 
 function goHome() {
@@ -976,7 +978,12 @@ async function loadStats() {
 
     <p>📚 Total histoire : ${totalData.total} mots</p><br>
 
-    <p>Répartition mot sur le mois</p>
+    <div class="stats-month-nav">
+      <button onclick="changeStatsMonth(-1)">◀</button>
+      <span id="statsMonthLabel"></span>
+      <button onclick="changeStatsMonth(1)">▶</button>
+    </div>
+
     <canvas id="monthChart"></canvas>
 
     <br><br>
@@ -1158,30 +1165,57 @@ function drawStatsCharts(stats) {
 
   const entries = Object.entries(stats);
 
-  // ======================
-  // COURBE MENSUELLE
-  // ======================
-
   const monthLabels = [];
   const monthValues = [];
 
+  const selectedMonth = String(currentStatsMonth + 1).padStart(2, '0');
+  const selectedYear = String(currentStatsYear);
+
+  const monthName = new Date(
+    currentStatsYear,
+    currentStatsMonth
+  ).toLocaleString('fr-FR', { month: 'long' });
+
+  document.getElementById('statsMonthLabel').innerText =
+    `${monthName} ${currentStatsYear}`;
+
   entries.forEach(([date, values]) => {
 
-    const day = date.split('-')[2];
+    const [year, month, day] = date.split('-');
 
-    monthLabels.push(day);
-    monthValues.push(values.written);
+    if (year === selectedYear && month === selectedMonth) {
+
+      monthLabels.push(day);
+      monthValues.push(values.written);
+    }
   });
 
-  new Chart(document.getElementById('monthChart'), {
+
+  if (window.monthChartInstance) {
+    window.monthChartInstance.destroy();
+  }
+
+
+  window.monthChartInstance = new Chart(document.getElementById('monthChart'), {
     type: 'line',
     data: {
       labels: monthLabels,
-      datasets: [{
-        label: 'Mots écrits / jour',
-        data: monthValues,
-        tension: 0.3
-      }]
+      datasets: [
+        {
+          label: 'Mots écrits / jour',
+          data: monthValues,
+          borderWidth: 3,
+          tension: 0.3
+        },
+        {
+          label: 'Objectif 300',
+          data: monthValues.map(() => 300),
+          borderWidth: 2,
+          pointRadius: 0,
+          borderDash: [8, 5]
+        }
+      ]
+
     }
   });
 
@@ -1217,6 +1251,22 @@ function drawStatsCharts(stats) {
   });
 }
 
+function changeStatsMonth(direction) {
+
+  currentStatsMonth += direction;
+
+  if (currentStatsMonth < 0) {
+    currentStatsMonth = 11;
+    currentStatsYear--;
+  }
+
+  if (currentStatsMonth > 11) {
+    currentStatsMonth = 0;
+    currentStatsYear++;
+  }
+
+  loadStats();
+}
 
 
 goHome();
