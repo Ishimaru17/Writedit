@@ -495,17 +495,45 @@ app.get('/api/full-export/:livre', async (req, res) => {
       });
 
       if (runs.length > 0) {
+
+        const trimmed = line.trim();
+
+        const isDialogue =
+          trimmed.startsWith('-') ||
+          trimmed.startsWith('—');
+
+        const nextLine = finalLines[index + 1]?.trim() || '';
+
+        const nextIsDialogue =
+          nextLine.startsWith('-') ||
+          nextLine.startsWith('—');
+
         paragraphs.push(
           new Paragraph({
             children: runs,
+
             alignment: AlignmentType.JUSTIFIED,
+
+          
+
             spacing: {
-              after: 200,   // espace après (≈ 10pt)
-              line: 300     // interligne
-            }
+              before: isDialogue ? 0 : 120,
+              after: nextIsDialogue ? 0 : (isDialogue ? 0 : 200),
+              line: 300
+            },
+
+
+            indent: isDialogue
+              ? {
+                  left: 300,
+                  //hanging: -700
+                }
+              : undefined
           })
         );
       }
+
+
 
     });
 
