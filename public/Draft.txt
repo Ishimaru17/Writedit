@@ -1,0 +1,36 @@
+Draft
+
+new Chart(document.getElementById('monthChart'), {
+  type: 'line',
+  data: {
+    labels: monthLabels,
+    datasets: [{
+      label: 'Mots écrits / jour',
+      data: monthValues,
+      borderWidth: 3,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        labels: {
+          color: '#222'
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#222'
+        }
+      },
+      y: {
+        ticks: {
+          color: '#222'
+        }
+      }
+    }
+  }
+});

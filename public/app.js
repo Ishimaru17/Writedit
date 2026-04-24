@@ -960,6 +960,7 @@ async function loadStats() {
   const percent = Math.min((dayStats.net / goal) * 100, 100);
 
   content.innerHTML = `
+    <div class="stats-container">
     <h2>📊 Stats du jour</h2>
 
     <p>✍️ Écrits : ${dayStats.written} mots</p>
@@ -973,8 +974,19 @@ async function loadStats() {
       </div>
     </div>
 
-    <p>📚 Total histoire : ${totalData.total} mots</p>
+    <p>📚 Total histoire : ${totalData.total} mots</p><br>
+
+    <p>Répartition mot sur le mois</p>
+    <canvas id="monthChart"></canvas>
+
+    <br><br>
+    <p>Répartition mot sur l'année</p><br>
+    <canvas id="yearChart"></canvas>
+    </div>
+
   `;
+
+  drawStatsCharts(stats);
 }
 
 async function loadCharactersSidebar() {
@@ -1141,6 +1153,69 @@ function exportAll() {
 }
 
 
+
+function drawStatsCharts(stats) {
+
+  const entries = Object.entries(stats);
+
+  // ======================
+  // COURBE MENSUELLE
+  // ======================
+
+  const monthLabels = [];
+  const monthValues = [];
+
+  entries.forEach(([date, values]) => {
+
+    const day = date.split('-')[2];
+
+    monthLabels.push(day);
+    monthValues.push(values.written);
+  });
+
+  new Chart(document.getElementById('monthChart'), {
+    type: 'line',
+    data: {
+      labels: monthLabels,
+      datasets: [{
+        label: 'Mots écrits / jour',
+        data: monthValues,
+        tension: 0.3
+      }]
+    }
+  });
+
+  // ======================
+  // HISTOGRAMME ANNUEL
+  // ======================
+
+  const monthlyTotals = {};
+
+  entries.forEach(([date, values]) => {
+
+    const month = date.slice(0, 7);
+
+    if (!monthlyTotals[month]) {
+      monthlyTotals[month] = 0;
+    }
+
+    monthlyTotals[month] += values.written;
+  });
+
+  const yearLabels = Object.keys(monthlyTotals);
+  const yearValues = Object.values(monthlyTotals);
+
+  new Chart(document.getElementById('yearChart'), {
+    type: 'bar',
+    data: {
+      labels: yearLabels,
+      datasets: [{
+        label: 'Mots écrits / mois',
+        data: yearValues
+      }]
+    }
+  });
+}
 
 
 
