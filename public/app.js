@@ -5,6 +5,8 @@ let isLoading = false;
 let currentChar = null;
 let currentStatsMonth = new Date().getMonth();
 let currentStatsYear = new Date().getFullYear();
+let currentYearView = new Date().getFullYear();
+
 
 
 function goHome() {
@@ -987,7 +989,13 @@ async function loadStats() {
     <canvas id="monthChart"></canvas>
 
     <br><br>
-    <p>Répartition mot sur l'année</p><br>
+    <p>Total de mots écrits sur l'année</p><br>
+    <div class="stats-month-nav">
+      <button onclick="changeStatsYear(-1)">◀</button>
+      <span id="statsYearLabel"></span>
+      <button onclick="changeStatsYear(1)">▶</button>
+    </div>
+
     <canvas id="yearChart"></canvas>
     </div>
 
@@ -1159,8 +1167,6 @@ function exportAll() {
   window.open(`/api/full-export/${currentBook}`);
 }
 
-
-
 function drawStatsCharts(stats) {
 
   const entries = Object.entries(stats);
@@ -1225,21 +1231,36 @@ function drawStatsCharts(stats) {
 
   const monthlyTotals = {};
 
+  for (let i = 1; i <= 12; i++) {
+    const key = String(i).padStart(2, '0');
+    monthlyTotals[key] = 0;
+  }
+
   entries.forEach(([date, values]) => {
 
-    const month = date.slice(0, 7);
+    const [year, month] = date.split('-');
 
-    if (!monthlyTotals[month]) {
-      monthlyTotals[month] = 0;
+    if (year === String(currentYearView)) {
+      monthlyTotals[month] += values.written;
     }
-
-    monthlyTotals[month] += values.written;
   });
 
-  const yearLabels = Object.keys(monthlyTotals);
+
+  document.getElementById('statsYearLabel').innerText =
+    currentYearView;
+
+  const yearLabels = Object.keys(monthlyTotals).map(m => {
+    return new Date(currentYearView, parseInt(m) - 1)
+      .toLocaleString('fr-FR', { month: 'short' });
+  });
+
   const yearValues = Object.values(monthlyTotals);
 
-  new Chart(document.getElementById('yearChart'), {
+  if (window.yearChartInstance) {
+    window.yearChartInstance.destroy();
+  }
+
+  window.yearChartInstance = new Chart(document.getElementById('yearChart'), {
     type: 'bar',
     data: {
       labels: yearLabels,
@@ -1268,5 +1289,9 @@ function changeStatsMonth(direction) {
   loadStats();
 }
 
+function changeStatsYear(direction) {
+  currentYearView += direction;
+  loadStats();
+}
 
 goHome();
