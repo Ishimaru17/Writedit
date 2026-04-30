@@ -1192,7 +1192,7 @@ function drawStatsCharts(stats) {
     if (year === selectedYear && month === selectedMonth) {
 
       monthLabels.push(day);
-      monthValues.push(values.written);
+      monthValues.push(values.net);
     }
   });
 
@@ -1241,7 +1241,7 @@ function drawStatsCharts(stats) {
     const [year, month] = date.split('-');
 
     if (year === String(currentYearView)) {
-      monthlyTotals[month] += values.written;
+      monthlyTotals[month] += values.net;
     }
   });
 
