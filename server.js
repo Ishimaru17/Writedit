@@ -14,8 +14,15 @@ app.use(express.static('public'));
 // GET ALL
 app.get('/api/personnages/:livre', (req, res) => {
   const livre = req.params.livre;
+  const universe = getUniverseFromBook(req.params.livre);
 
-  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'personnages');
+  const dirPath = path.join(
+    __dirname,
+    'data',
+    'univers',
+    universe,
+    'personnages'
+  );
 
    if (!fs.existsSync(dirPath)) {
     return res.json([]);
@@ -100,14 +107,21 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 //Wiki
 app.get('/api/wiki/:livre', (req, res) => {
   const livre = req.params.livre;
+  const universe = getUniverseFromBook(req.params.livre);
 
-  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'wiki');
-
+  const dirPath = path.join(
+    __dirname,
+    'data',
+    'univers',
+    universe,
+    'wiki'
+  );
+  
   const files = fs.readdirSync(dirPath);
 
   const data = files.map(file => ({
     name: file,
-    path: `/wiki/${livre}/wiki/${file}`
+    path: `/wiki/${universe}/wiki/${file}`
   }));
 
   res.json(data);
@@ -115,7 +129,10 @@ app.get('/api/wiki/:livre', (req, res) => {
 
 
 // servir les images wiki
-app.use('/wiki', express.static(path.join(__dirname, 'data', 'livres')));
+app.use(
+  '/wiki',
+  express.static(path.join(__dirname, 'data', 'univers'))
+);
 
 app.get('/api/texte/:livre/:file', (req, res) => {
   const { livre, file } = req.params;
@@ -560,6 +577,23 @@ app.get('/api/full-export/:livre', async (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename=${livre}.docx`);
   res.send(buffer);
 });
+
+function getUniverseFromBook(book) {
+
+  const metaPath = path.join(
+    __dirname,
+    'data',
+    'livres',
+    book,
+    'meta.json'
+  );
+
+  const meta = JSON.parse(
+    fs.readFileSync(metaPath, 'utf-8')
+  );
+
+  return meta.universe;
+}
 
 
 app.listen(PORT, () => {
