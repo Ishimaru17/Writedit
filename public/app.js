@@ -26,6 +26,10 @@ function goHome() {
       <div class="card" onclick="selectBook('egisse-jed')">
         <h3>Egisse-Jed</h3>
       </div>
+
+      <div class="card" onclick="selectBook('amphitrite-poseidon')">
+        <h3>Mythologie A&P</h3>
+      </div>
     </div>
   `;
 
@@ -50,6 +54,8 @@ function updateTitle() {
     title.textContent = 'Serment maudit';
   } else if (currentBook === 'egisse-jed') {
     title.textContent = 'Egisse-Jed';
+  }else if (currentBook === 'amphitrite-poseidon') {
+    title.textContent = 'Mythologie A&P';
   } else {
     tile.textContent = 'Writedit'
   }
