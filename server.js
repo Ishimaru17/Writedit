@@ -637,6 +637,23 @@ app.get('/api/universes', (req, res) => {
   res.json(universes);
 });
 
+app.get('/api/bookMeta/:livre', (req, res) => {
+
+  const metaPath = path.join(
+    __dirname,
+    'data',
+    'livres',
+    req.params.livre,
+    'meta.json'
+  );
+
+  const meta = JSON.parse(
+    fs.readFileSync(metaPath, 'utf-8')
+  );
+
+  res.json(meta);
+});
+
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });

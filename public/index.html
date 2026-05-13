@@ -62,35 +62,35 @@
   </main>
 
   <aside id="chaptersSidebar" class="hidden">
+    <button id="toggleChapters">➡</button>
 
-  <div class="editor-tools-sidebar">
-    <button onclick="formatText('bold')">Gras</button>
-    <button onclick="formatText('italic')">Italic</button>
-    <button onclick="formatText('underline')">Souligné</button>
-   </div>
+    <div class="editor-tools-sidebar">
+      <button onclick="formatText('bold')">Gras</button>
+      <button onclick="formatText('italic')">Italic</button>
+      <button onclick="formatText('underline')">Souligné</button>
+     </div>
 
-   <div class="chapter-colors">
-    <button onclick="setChapterColor('#f8b4c8', this)" style="background: #f8b4c8;"></button>
-    <button onclick="setChapterColor('#a8d5ff', this)" style="background: #a8d5ff;"></button>
-    <button onclick="setChapterColor('#feff82', this)" style="background: #feff82;"></button>
-    <button onclick="setChapterColor('#ffffff', this)" style="background:#ffffff;"></button>
-  </div>
+     <div class="chapter-colors">
+      <button onclick="setChapterColor('#f8b4c8', this)" style="background: #f8b4c8;"></button>
+      <button onclick="setChapterColor('#a8d5ff', this)" style="background: #a8d5ff;"></button>
+      <button onclick="setChapterColor('#feff82', this)" style="background: #feff82;"></button>
+      <button onclick="setChapterColor('#ffffff', this)" style="background:#ffffff;"></button>
+    </div>
 
 
 
-  <div class="sidebar-section">
-    <h3>📖 Chapitres</h3>
-    <div id="chaptersList"></div>
-    <button onclick="createChapter()">➕ Nouveau</button>
-  </div>
+    <div class="sidebar-section">
+      <h3>📖 Chapitres</h3>
+      <div id="chaptersList"></div>
+      <button onclick="createChapter()">➕ Nouveau</button>
+    </div>
 
-  <div class="sidebar-section">
-    <h3>👤 Personnages</h3>
-    <div id="charactersList"></div>
-    <div id="characterDetails"></div>
-    <button onclick="createCharacter()">➕ Nouveau</button>
-    <!--<button onclick="insertCharacter()">➕ Insert</button>-->
-  </div>
+    <div class="sidebar-section">
+      <h3>👤 Personnages</h3>
+      <div id="charactersList"></div>
+      <div id="characterDetails"></div>
+      <button onclick="createCharacter()">➕ Nouveau</button>
+    </div>
 
   </aside>
 

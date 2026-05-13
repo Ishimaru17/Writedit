@@ -729,6 +729,15 @@ async function loadTextEditor(file = null) {
   document.getElementById('sidebar').classList.remove('hidden');
   document.getElementById('chaptersSidebar').classList.remove('hidden');
 
+  const metaRes = await fetch(
+    `/api/bookMeta/${currentBook}`
+  );
+
+  const meta = await metaRes.json();
+
+  document.querySelector('header h1').textContent =
+    meta.title;
+
 
   const res = await fetch(`/api/texte/${currentBook}`);
   const files = await res.json();
@@ -1336,6 +1345,15 @@ document
     document
       .getElementById('sidebar')
       .classList.toggle('collapsed');
+});
+
+  document
+  .getElementById('toggleChapters')
+  .addEventListener('click', () => {
+
+    document
+      .getElementById('chaptersSidebar')
+      .classList.toggle('hiddenSidebar');
 });
 
 goHome();
