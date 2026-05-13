@@ -595,6 +595,47 @@ function getUniverseFromBook(book) {
   return meta.universe;
 }
 
+app.get('/api/universes', (req, res) => {
+
+  const booksDir = path.join(__dirname, 'data', 'livres');
+
+  const books = fs.readdirSync(booksDir);
+
+  const universes = {};
+
+  books.forEach(book => {
+
+    const metaPath = path.join(
+      booksDir,
+      book,
+      'meta.json'
+    );
+
+    if (!fs.existsSync(metaPath)) return;
+
+    const meta = JSON.parse(
+      fs.readFileSync(metaPath, 'utf-8')
+    );
+
+    if (!universes[meta.universe]) {
+      universes[meta.universe] = [];
+    }
+
+    universes[meta.universe].push({
+      id: book,
+      title: meta.title,
+      status: meta.status || 'draft',
+      order: meta.order || 0
+    });
+  });
+
+  // tri tomes
+  Object.values(universes).forEach(list => {
+    list.sort((a, b) => a.order - b.order);
+  });
+
+  res.json(universes);
+});
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);

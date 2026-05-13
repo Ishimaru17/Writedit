@@ -8,34 +8,55 @@ let currentStatsYear = new Date().getFullYear();
 let currentYearView = new Date().getFullYear();
 
 
+async function goHome() {
 
-function goHome() {
-  document.getElementById('sidebar').classList.add('hidden');
+  hideChaptersSidebar();
+
+  const res = await fetch('/api/universes');
+  const universes = await res.json();
 
   const content = document.getElementById('content');
 
   content.innerHTML = `
-
-    <h1>Choisir un livre</h1>
-
-    <div class="grid">
-      <div class="card" onclick="selectBook('serment-maudit')">
-        <h3>Serment maudit</h3>
-      </div>
-
-      <div class="card" onclick="selectBook('egisse-jed')">
-        <h3>Egisse-Jed</h3>
-      </div>
-
-      <div class="card" onclick="selectBook('amphitrite-poseidon')">
-        <h3>Mythologie A&P</h3>
-      </div>
-    </div>
+    <h1 class="home-title">Writedit</h1>
+    <div id="universes"></div>
   `;
 
-  document.querySelector('header h1').textContent = "Writedit";
+  const container = document.getElementById('universes');
 
-  hideChaptersSidebar();
+  Object.entries(universes).forEach(([universe, books]) => {
+
+    const block = document.createElement('div');
+    block.className = 'universe-block';
+
+    block.innerHTML = `
+      <h2>🌌 ${formatUniverseName(universe)}</h2>
+      <div class="universe-books"></div>
+    `;
+
+    const booksContainer =
+      block.querySelector('.universe-books');
+
+    books.forEach(book => {
+
+      const div = document.createElement('div');
+
+      div.className = `book-card ${book.status}`;
+
+      div.innerHTML = `
+        <p>${book.title}</p>
+      `;
+
+      div.onclick = () => {
+        currentBook = book.id;
+        loadTextEditor();
+      };
+
+      booksContainer.appendChild(div);
+    });
+
+    container.appendChild(block);
+  });
 }
 
 function selectBook(book) {
@@ -705,6 +726,7 @@ async function getSynonyms() {
 }
 
 async function loadTextEditor(file = null) {
+  document.getElementById('sidebar').classList.remove('hidden');
   document.getElementById('chaptersSidebar').classList.remove('hidden');
 
 
@@ -1298,6 +1320,13 @@ function changeStatsMonth(direction) {
 function changeStatsYear(direction) {
   currentYearView += direction;
   loadStats();
+}
+
+function formatUniverseName(name) {
+
+  return name
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase());
 }
 
 goHome();

@@ -403,3 +403,46 @@ canvas {
 .stats-month-nav button:hover {
   background: #666;
 }
+
+.universe-block {
+  margin-bottom: 50px;
+}
+
+.universe-books {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.book-card {
+  padding: 18px 24px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 220px;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.book-card:hover {
+  transform: translateY(-2px);
+}
+
+/* STATUS */
+
+.book-card.draft {
+  background: #f6edc9;
+}
+
+.book-card.editing {
+  background: #dbe9f6;
+}
+
+.book-card.done {
+  background: #d9f2dd;
+}
+
+.home-title {
+  margin-bottom: 50px;
+}
