@@ -222,11 +222,11 @@ h3 {
   top: 0;
   height: 100vh;
 
-  transition: transform 0.3s;
+  transition: margin-right 0.3s;
 }
 
 #chaptersSidebar.hiddenSidebar {
-  transform: translateX(100%);
+  margin-right: -250px;
 }
 
 .sidebar-section {
@@ -461,4 +461,23 @@ canvas {
 
 .home-title {
   margin-bottom: 50px;
+}
+
+#toggleChapters {
+  position: fixed;
+
+  right: 10px;
+  top: 45px;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  z-index: 999;
+
+  background: #ececec;
 }
