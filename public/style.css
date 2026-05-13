@@ -21,6 +21,16 @@ body {
   color: white;
   padding: 10px;
   min-height: 100vh;
+  transition: width 0.3s;
+  overflow: hidden;
+}
+
+#sidebar.collapsed {
+  width: 45px;
+}
+
+#sidebar.collapsed .label {
+  display: none;
 }
 
 #sidebar.hidden {

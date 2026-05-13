@@ -1329,4 +1329,13 @@ function formatUniverseName(name) {
     .replace(/\b\w/g, l => l.toUpperCase());
 }
 
+document
+  .getElementById('toggleSidebar')
+  .addEventListener('click', () => {
+
+    document
+      .getElementById('sidebar')
+      .classList.toggle('collapsed');
+});
+
 goHome();

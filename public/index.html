@@ -11,16 +11,43 @@
 <div id="app">
 
   <aside id="sidebar" class="hidden">
-    <button onclick="goHome()">🏠 Livres</button>
-    <button onclick="loadTextEditor()">✍️ Texte</button>
-    <button onclick="loadCharacters()">👤 Personnages</button>
-    <button onclick="loadWiki()">📚 Wiki</button>
-    <button onclick="loadTranslator()">🌍 Traducteur</button>
-    <button onclick="loadSynonyms()">💡 Synonymes</button>
-    <button onclick="loadStats()">📊 Stats</button>
+    <button id="toggleSidebar">☰</button>
+    <button onclick="goHome()">
+      <span class="icon">🏠</span>
+      <span class="label">Livres</span>
+    </button>
+    <button onclick="loadTextEditor()">
+      <span class="icon">✍️</span>
+      <span class="label">Texte</span>
+    </button>
+    <button onclick="loadCharacters()">
+      <span class="icon">👤</span> 
+      <span class="label">Personnages</span>
+    </button>
+    <button onclick="loadWiki()">
+      <span class="icon">📚</span> 
+      <span class="label">Wiki</span>
+    </button>
+    <button onclick="loadTranslator()">
+      <span class="icon">🌍</span> 
+      <span class="label">Traducteur</span>
+    </button>
+    <button onclick="loadSynonyms()">
+      <span class="icon">💡</span> 
+      <span class="label">Synonymes</span>
+    </button>
+    <button onclick="loadStats()">
+      <span class="icon">📊</span> 
+      <span class="label">Stats</span>
+    </button>
     <input id="searchInput" placeholder="Rechercher...">
-    <button onclick="search()">🔎</button>
-    <button onclick="exportAll()">📄 Export complet</button>
+    <button onclick="search()">
+      <span class="icon">🔎</span>
+    </button>
+    <button onclick="exportAll()">
+      <span class="icon">📄</span> 
+      <span class="label">Export complet</span>
+    </button>
 
   </aside>
 
