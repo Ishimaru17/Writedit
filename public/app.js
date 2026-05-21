@@ -44,6 +44,15 @@ async function goHome() {
       div.className = `book-card ${book.status}`;
 
       div.innerHTML = `
+        ${
+          book.cover
+            ? `<img 
+                src="/covers/${book.id}/${book.cover}" 
+                class="book-cover"
+              >`
+            : ''
+        }
+
         <p>${book.title}</p>
       `;
 

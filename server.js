@@ -639,7 +639,8 @@ app.get('/api/universes', (req, res) => {
       id: book,
       title: meta.title,
       status: meta.status || 'draft',
-      order: meta.order || 0
+      order: meta.order || 0,
+      cover: meta.cover || null
     });
   });
 
@@ -667,6 +668,13 @@ app.get('/api/bookMeta/:livre', (req, res) => {
 
   res.json(meta);
 });
+
+app.use(
+  '/covers',
+  express.static(
+    path.join(__dirname, 'data', 'livres')
+  )
+);
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
