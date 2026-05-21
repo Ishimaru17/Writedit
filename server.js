@@ -45,8 +45,15 @@ app.get('/api/personnages/:livre', (req, res) => {
 // UPDATE
 app.post('/api/personnages/update/:livre', (req, res) => {
   const livre = req.params.livre;
+  const universe = getUniverseFromBook(req.params.livre);
 
-  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'personnages');
+  const dirPath = path.join(
+    __dirname,
+    'data',
+    'univers',
+    universe,
+    'personnages'
+  );
 
   const updatedChar = req.body;
 
@@ -62,8 +69,15 @@ app.post('/api/personnages/update/:livre', (req, res) => {
 // CREATE
 app.post('/api/personnages/create/:livre', (req, res) => {
   const livre = req.params.livre;
+  const universe = getUniverseFromBook(req.params.livre);
 
-  const dirPath = path.join(__dirname, 'data', 'livres', livre, 'personnages');
+  const dirPath = path.join(
+    __dirname,
+    'data',
+    'univers',
+    universe,
+    'personnages'
+  );
 
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
