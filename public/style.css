@@ -502,3 +502,20 @@ canvas {
   border-radius: 12px;
   background: #f4f4f4;
 }
+
+.release-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 12px;
+  background: #f4f4f4;
+}
+
+.release-form input,
+.release-form textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}

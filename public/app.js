@@ -1400,13 +1400,15 @@ document
       ➕ Ajouter
     </button>
 
+    <h3>📖 Déjà sortis</h3>
+
+    <div id="pastList"></div>
+
     <h3>✨ À venir</h3>
 
     <div id="upcomingList"></div>
 
-    <h3>📖 Déjà sortis</h3>
-
-    <div id="pastList"></div>
+    
   `;
 
   renderReleaseList(upcoming, 'upcomingList');
@@ -1471,22 +1473,72 @@ async function toggleRelease(id) {
 
 function showAddReleaseForm() {
 
+  const content =
+    document.getElementById('content');
+
+  content.innerHTML += `
+
+    <div id="releaseForm" class="release-form">
+
+      <h3>➕ Ajouter une sortie</h3>
+
+      <input
+        type="text"
+        id="releaseTitle"
+        placeholder="Titre"
+      >
+
+      <input
+        type="text"
+        id="releaseAuthor"
+        placeholder="Auteur"
+      >
+
+      <input
+        type="date"
+        id="releaseDate"
+      >
+
+      <textarea
+        id="releaseComment"
+        placeholder="Commentaire"
+      ></textarea>
+
+      <label>
+        <input
+          type="checkbox"
+          id="releaseOwned"
+        >
+        Série déjà commencée
+      </label>
+
+      <button onclick="saveRelease()">
+        💾 Ajouter
+      </button>
+
+    </div>
+  `;
+}
+
+async function saveRelease() {
+
   const title =
-    prompt('Titre');
+    document.getElementById('releaseTitle').value;
 
   const author =
-    prompt('Auteur');
+    document.getElementById('releaseAuthor').value;
 
   const releaseDate =
-    prompt('Date YYYY-MM-DD');
+    document.getElementById('releaseDate').value;
 
   const comment =
-    prompt('Commentaire');
+    document.getElementById('releaseComment').value;
 
   const ownedSeries =
-    confirm('Tu as déjà la série ?');
+    document.getElementById('releaseOwned').checked;
 
-  fetch('/api/releases', {
+  await fetch('/api/releases', {
+
     method: 'POST',
 
     headers: {
@@ -1501,8 +1553,9 @@ function showAddReleaseForm() {
       ownedSeries,
       done: false
     })
+  });
 
-  }).then(() => loadReleases());
+  loadReleases();
 }
 
 goHome();
