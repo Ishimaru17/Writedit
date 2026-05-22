@@ -1432,6 +1432,7 @@ function renderReleaseList(list, containerId) {
 
         <input
           type="checkbox"
+          onclick="event.stopPropagation()"
           onchange="toggleRelease(${book.id})"
         >
 
@@ -1445,11 +1446,15 @@ function renderReleaseList(list, containerId) {
           .toLocaleDateString('fr-FR')
       }</p>
 
-      ${
-        book.comment
-          ? `<p>💬 ${book.comment}</p>`
-          : ''
-      }
+      <textarea
+        class="release-comment"
+        id="comment-${book.id}"
+        placeholder="Commentaire..."
+      >${book.comment || ''}</textarea>
+
+      <button onclick="saveReleaseComment(${book.id})">
+        💾 Sauvegarder
+      </button>
 
       ${
         book.ownedSeries
@@ -1558,4 +1563,24 @@ async function saveRelease() {
   loadReleases();
 }
 
+async function saveReleaseComment(id) {
+
+  const comment =
+    document.getElementById(`comment-${id}`).value;
+
+  await fetch(`/api/releases/comment/${id}`, {
+
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify({
+      comment
+    })
+  });
+
+  console.log('commentaire sauvegardé');
+}
 goHome();

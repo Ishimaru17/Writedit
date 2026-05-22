@@ -750,6 +750,55 @@ app.post('/api/releases/toggle/:id', (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/releases/comment/:id', (req, res) => {
+
+  const filePath = path.join(
+    __dirname,
+    'data',
+    'releases.json'
+  );
+
+  const releases = JSON.parse(
+    fs.readFileSync(filePath, 'utf-8')
+  );
+
+  const release = releases.find(
+    r => r.id == req.params.id
+  );
+
+  if (release) {
+    release.comment = req.body.comment;
+  }
+
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify(releases, null, 2)
+  );
+
+  res.json({ success: true });
+});
+
+async function saveReleaseComment(id) {
+
+  const comment =
+    document.getElementById(`comment-${id}`).value;
+
+  await fetch(`/api/releases/comment/${id}`, {
+
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify({
+      comment
+    })
+  });
+
+  console.log('commentaire sauvegardé');
+}
+
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });
