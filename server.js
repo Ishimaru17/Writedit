@@ -676,6 +676,80 @@ app.use(
   )
 );
 
+app.get('/api/releases', (req, res) => {
+
+  const filePath = path.join(
+    __dirname,
+    'data',
+    'releases.json'
+  );
+
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, '[]');
+  }
+
+  const data = JSON.parse(
+    fs.readFileSync(filePath, 'utf-8')
+  );
+
+  res.json(data);
+});
+
+app.post('/api/releases', (req, res) => {
+
+  const filePath = path.join(
+    __dirname,
+    'data',
+    'releases.json'
+  );
+
+  const releases = JSON.parse(
+    fs.readFileSync(filePath, 'utf-8')
+  );
+
+  const newRelease = {
+    id: Date.now(),
+    ...req.body
+  };
+
+  releases.push(newRelease);
+
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify(releases, null, 2)
+  );
+
+  res.json({ success: true });
+});
+
+app.post('/api/releases/toggle/:id', (req, res) => {
+
+  const filePath = path.join(
+    __dirname,
+    'data',
+    'releases.json'
+  );
+
+  const releases = JSON.parse(
+    fs.readFileSync(filePath, 'utf-8')
+  );
+
+  const release = releases.find(
+    r => r.id == req.params.id
+  );
+
+  if (release) {
+    release.done = !release.done;
+  }
+
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify(releases, null, 2)
+  );
+
+  res.json({ success: true });
+});
+
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });

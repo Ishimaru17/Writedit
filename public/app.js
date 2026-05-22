@@ -1365,4 +1365,144 @@ document
       .classList.toggle('hiddenSidebar');
 });
 
+  async function loadReleases() {
+
+  hideChaptersSidebar();
+
+  const res = await fetch('/api/releases');
+
+  let releases = await res.json();
+
+  releases.sort((a, b) =>
+    new Date(a.releaseDate)
+    - new Date(b.releaseDate)
+  );
+
+  const today = new Date();
+
+  const upcoming = releases.filter(r =>
+    new Date(r.releaseDate) >= today &&
+    !r.done
+  );
+
+  const past = releases.filter(r =>
+    new Date(r.releaseDate) < today &&
+    !r.done
+  );
+
+  const content =
+    document.getElementById('content');
+
+  content.innerHTML = `
+    <h2>📚 Sorties livres</h2>
+
+    <button onclick="showAddReleaseForm()">
+      ➕ Ajouter
+    </button>
+
+    <h3>✨ À venir</h3>
+
+    <div id="upcomingList"></div>
+
+    <h3>📖 Déjà sortis</h3>
+
+    <div id="pastList"></div>
+  `;
+
+  renderReleaseList(upcoming, 'upcomingList');
+
+  renderReleaseList(past, 'pastList');
+}
+
+function renderReleaseList(list, containerId) {
+
+  const container =
+    document.getElementById(containerId);
+
+  list.forEach(book => {
+
+    const div = document.createElement('div');
+
+    div.className = 'release-card';
+
+    div.innerHTML = `
+      <label>
+
+        <input
+          type="checkbox"
+          onchange="toggleRelease(${book.id})"
+        >
+
+        <strong>${book.title}</strong>
+        — ${book.author}
+
+      </label>
+
+      <p>📅 ${
+        new Date(book.releaseDate)
+          .toLocaleDateString('fr-FR')
+      }</p>
+
+      ${
+        book.comment
+          ? `<p>💬 ${book.comment}</p>`
+          : ''
+      }
+
+      ${
+        book.ownedSeries
+          ? `<p>📚 Série commencée</p>`
+          : ''
+      }
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+async function toggleRelease(id) {
+
+  await fetch(`/api/releases/toggle/${id}`, {
+    method: 'POST'
+  });
+
+  loadReleases();
+}
+
+function showAddReleaseForm() {
+
+  const title =
+    prompt('Titre');
+
+  const author =
+    prompt('Auteur');
+
+  const releaseDate =
+    prompt('Date YYYY-MM-DD');
+
+  const comment =
+    prompt('Commentaire');
+
+  const ownedSeries =
+    confirm('Tu as déjà la série ?');
+
+  fetch('/api/releases', {
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify({
+      title,
+      author,
+      releaseDate,
+      comment,
+      ownedSeries,
+      done: false
+    })
+
+  }).then(() => loadReleases());
+}
+
 goHome();
